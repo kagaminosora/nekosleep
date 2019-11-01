@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">NekoSleep</string>
+    <string name="pager_dot_icon">DotIcon</string>
+    <string name="pet_collection">Pets</string>
 </resources>
