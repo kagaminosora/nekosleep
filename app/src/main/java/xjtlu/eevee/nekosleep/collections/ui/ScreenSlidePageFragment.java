@@ -1,4 +1,4 @@
-package xjtlu.eevee.nekosleep.collections;
+package xjtlu.eevee.nekosleep.collections.ui;
 
 import androidx.fragment.app.Fragment;
 import android.os.Bundle;
