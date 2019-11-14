@@ -16,7 +16,6 @@
 
 package xjtlu.eevee.nekosleep.collections.persistence;
 
-import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import xjtlu.eevee.nekosleep.collections.PetDataSource;
 
@@ -25,9 +24,9 @@ import xjtlu.eevee.nekosleep.collections.PetDataSource;
  */
 public class LocalPetDataSource implements PetDataSource {
 
-    private final PetDAO mPetDao;
+    private final PetDao mPetDao;
 
-    public LocalPetDataSource(PetDAO petDao) {
+    public LocalPetDataSource(PetDao petDao) {
         mPetDao = petDao;
     }
 

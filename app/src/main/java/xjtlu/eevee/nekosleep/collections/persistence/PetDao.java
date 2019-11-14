@@ -11,12 +11,13 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
 @Dao
-public interface PetDAO {
-    @Query("SELECT * FROM book_pet")
-    List<Pet> getAll();
+public interface PetDao {
 
     @Query("SELECT * FROM book_pet WHERE pet_id = (:petId)")
     Flowable<Pet> getPetById(String petId);
+
+    @Query("SELECT * FROM book_pet")
+    List<Pet> getAll();
 
     @Query("SELECT * FROM book_pet WHERE name LIKE :name")
     Pet findByName(String name);

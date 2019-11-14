@@ -31,7 +31,6 @@ public class Pet {
     public boolean active;
 
 
-
     @Ignore
 
     public String getId(){ return petId; }

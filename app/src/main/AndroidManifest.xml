@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".home.MainActivity"></activity>
+        <activity android:name=".collections.ui.ChooseItemActivity"></activity>
 
     </application>
 

@@ -8,7 +8,7 @@ import androidx.room.Query;
 import java.util.List;
 
 @Dao
-public interface ItemDAO {
+public interface ItemDao {
     @Query("SELECT * FROM book_item")
     List<Item> getAll();
 

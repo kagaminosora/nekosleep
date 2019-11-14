@@ -9,8 +9,8 @@ import androidx.room.RoomDatabase;
 @Database(entities = {Pet.class, Item.class}, version = 1)
 public abstract class PetBookDatabase extends RoomDatabase {
     private static volatile PetBookDatabase INSTANCE;
-    public abstract PetDAO petDAO();
-    public abstract ItemDAO itemDAO();
+    public abstract PetDao petDAO();
+    public abstract ItemDao itemDAO();
 
     public static final String PET_DATABASE_NAME = "book_pet";
     public static final String ITEM_DATABASE_NAME = "book_item";

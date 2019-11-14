@@ -10,11 +10,13 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:text="@string/pet_collection"
+        android:layout_marginTop="20dp"
+        android:textSize="20dp"
         />
 
     <androidx.viewpager.widget.ViewPager
         android:layout_width="match_parent"
-        android:layout_height="600dp"
+        android:layout_height="550dp"
         android:layout_marginTop="10dp"
         android:id="@+id/view_pager_pets">
     </androidx.viewpager.widget.ViewPager>
@@ -25,6 +27,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
+        android:layout_marginTop="10dp"
         >
         <ImageView
             android:layout_width="wrap_content"

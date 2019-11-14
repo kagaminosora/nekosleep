@@ -1,7 +1,8 @@
 package xjtlu.eevee.nekosleep.collections.ui;
 
 import android.content.Context;
-import android.graphics.Rect;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -13,8 +14,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.room.Room;
 import androidx.viewpager.widget.ViewPager;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -30,18 +31,18 @@ import xjtlu.eevee.nekosleep.collections.Injection;
 import xjtlu.eevee.nekosleep.collections.ViewModelFactory;
 import xjtlu.eevee.nekosleep.collections.persistence.Pet;
 import xjtlu.eevee.nekosleep.collections.persistence.PetBookDatabase;
-import xjtlu.eevee.nekosleep.collections.persistence.PetDAO;
+import xjtlu.eevee.nekosleep.collections.persistence.PetDao;
 
 public class PetScreenSlideActivity extends AppCompatActivity {
     Context appContext;
     static PetBookDatabase dbPet;
-    static PetDAO petDAO;
+    static PetDao petDao;
 
 
     private static final String TAG = PetScreenSlideActivity.class.getSimpleName();
-    private final CompositeDisposable mDisposable = new CompositeDisposable();
-    private ViewModelFactory mViewModelFactory;
-    private PetViewModel mViewModel;
+    private final CompositeDisposable disposable = new CompositeDisposable();
+    //private ViewModelFactory mViewModelFactory;
+    //private PetViewModel mViewModel;
 
     private static int NUM_PAGE = 4;
     ViewPager page_one;
@@ -115,10 +116,10 @@ public class PetScreenSlideActivity extends AppCompatActivity {
     public void initPetData(){
         if(dbPet == null) {
             dbPet = PetBookDatabase.getInstance(appContext);
-            petDAO = dbPet.petDAO();
+            petDao = dbPet.petDAO();
         }
-        mViewModelFactory = Injection.provideViewModelFactory(this);
-        mViewModel = new ViewModelProvider(this, mViewModelFactory).get(PetViewModel.class);
+        //mViewModelFactory = Injection.provideViewModelFactory(this);
+        //mViewModel = new ViewModelProvider(this, mViewModelFactory).get(PetViewModel.class);
 
     }
 
@@ -133,7 +134,16 @@ public class PetScreenSlideActivity extends AppCompatActivity {
         View page = View.inflate(this, R.layout.fragment_pets, null);
         GridLayout gl_pets = page.findViewById(R.id.gl_pets);
         int petNum = gl_pets.getChildCount();
+
         for(int i=0; i<petNum; i++){
+            CardView cv = (CardView)gl_pets.getChildAt(i);
+            cv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(PetScreenSlideActivity.this, ChooseItemActivity.class);
+                    startActivity(intent);
+                }
+            });
             final TextView tv_pet;
             switch (i) {
                 case 0:
@@ -158,12 +168,15 @@ public class PetScreenSlideActivity extends AppCompatActivity {
             }else if(index<100){
                 petId = "000000"+index;
             }
-            mDisposable.add(petDAO.getPetById(petId)
+            disposable.add(petDao.getPetById(petId)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(pet -> {
-                                Drawable pet_img = AssetReader.getDrawableFromAssets(
-                                        appContext, "petbook_img/"+pet.getImageName()+".png");
+                                Drawable pet_img = getResources().getDrawable(R.drawable.default_cat);
+                                //if(pet.isActive()) {
+                                    pet_img = AssetReader.getDrawableFromAssets(
+                                            appContext, "petbook_img/" + pet.getImageName() + ".png");
+                                //}
                                 pet_img.setBounds(0,0,pet_img.getMinimumWidth(),pet_img.getMinimumHeight());
                                 tv_pet.setCompoundDrawablesWithIntrinsicBounds(null, pet_img, null, null);
                                 tv_pet.setText(pet.getPetName());
