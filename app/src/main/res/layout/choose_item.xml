@@ -52,7 +52,7 @@
                 android:id="@+id/img_cii"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/baseball"
+                android:src="@drawable/default_item"
                 android:padding="30dp"/>
         </androidx.cardview.widget.CardView>
     </LinearLayout>
@@ -62,8 +62,8 @@
         android:layout_width="match_parent"
         android:layout_height="400dp"
         android:columnCount="3"
-        android:rowCount="3"
-        >
+        android:rowCount="3">
+
         <androidx.cardview.widget.CardView
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -74,131 +74,166 @@
             <ImageView
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/crv_cii_bg"/>
+                android:src="@null"/>
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/baseball"
-                android:padding="15dp"/>
+                android:src="@drawable/default_item"
+                android:padding="15dp"
+                android:layout_gravity="center"/>
 
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="4dp"
             android:layout_margin="20dp"
             >
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/rubber_ball"
-                android:padding="15dp"/>
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="4dp"
-            android:layout_margin="20dp"
-            >
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@null"/>
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/rubber_ball_y"
-                android:padding="15dp"/>
-        </androidx.cardview.widget.CardView>
+                android:src="@drawable/default_item"
+                android:padding="15dp"
+                android:layout_gravity="center"/>
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="4dp"
-            android:layout_margin="20dp"
-            >
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/default_item"
-                android:padding="15dp"/>
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="4dp"
             android:layout_margin="20dp"
             >
             <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@null"/>
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/default_item"
-                android:padding="15dp"/>
+                android:padding="15dp"
+                android:layout_gravity="center"/>
+
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="4dp"
             android:layout_margin="20dp"
             >
             <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@null"/>
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/default_item"
-                android:padding="15dp"/>
+                android:padding="15dp"
+                android:layout_gravity="center"/>
+
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="4dp"
             android:layout_margin="20dp"
             >
             <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@null"/>
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/default_item"
-                android:padding="15dp"/>
+                android:padding="15dp"
+                android:layout_gravity="center"/>
+
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="4dp"
             android:layout_margin="20dp"
             >
             <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@null"/>
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/default_item"
-                android:padding="15dp"/>
+                android:padding="15dp"
+                android:layout_gravity="center"/>
+
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="4dp"
             android:layout_margin="20dp"
             >
             <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@null"/>
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/default_item"
-                android:padding="15dp"/>
+                android:padding="15dp"
+                android:layout_gravity="center"/>
+
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="4dp"
             android:layout_margin="20dp"
             >
             <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@null"/>
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/default_item"
-                android:padding="15dp"/>
+                android:padding="15dp"
+                android:layout_gravity="center"/>
+
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="4dp"
+            android:layout_margin="20dp"
+            >
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@null"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/default_item"
+                android:padding="15dp"
+                android:layout_gravity="center"/>
+
         </androidx.cardview.widget.CardView>
 
     </GridLayout>

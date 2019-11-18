@@ -136,11 +136,25 @@ public class PetScreenSlideActivity extends AppCompatActivity {
         int petNum = gl_pets.getChildCount();
 
         for(int i=0; i<petNum; i++){
+            String petId = "00000000";
+            int index = pageNum*4+i;
+            if(index<10){
+                petId = "0000000"+index;
+            }else if(index<100){
+                petId = "000000"+index;
+            }else{
+                petId = "00000"+index;
+            }
             CardView cv = (CardView)gl_pets.getChildAt(i);
+
+            String finalPetId = petId;
             cv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(PetScreenSlideActivity.this, ChooseItemActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("petId", finalPetId);
+                    intent.putExtras(bundle);
                     startActivity(intent);
                 }
             });
@@ -160,13 +174,6 @@ public class PetScreenSlideActivity extends AppCompatActivity {
                     break;
                     default:
                         tv_pet = gl_pets.findViewById(R.id.pb_name0);
-            }
-            String petId = "00000000";
-            int index = pageNum*4+i;
-            if(index<10){
-                petId = "0000000"+index;
-            }else if(index<100){
-                petId = "000000"+index;
             }
             disposable.add(petDao.getPetById(petId)
                     .subscribeOn(Schedulers.io())

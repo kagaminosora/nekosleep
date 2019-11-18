@@ -7,13 +7,18 @@ import androidx.room.Query;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 @Dao
 public interface ItemDao {
     @Query("SELECT * FROM book_item")
     List<Item> getAll();
 
     @Query("SELECT * FROM book_item WHERE owner = (:petId)")
-    List<Item> getItemByPetId(String petId);
+    Flowable<List<Item>> getItemByPetId(String petId);
+
+    @Query("SELECT * FROM book_item WHERE item_id = :itemId")
+    Flowable<Item> findById(String itemId);
 
     @Query("SELECT * FROM book_item WHERE name LIKE :name")
     Item findByName(String name);
