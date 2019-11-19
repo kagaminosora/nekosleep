@@ -14,11 +14,16 @@
         </activity>
         <activity android:name=".home.MainActivity"></activity>
         <activity android:name=".settings.UserSettingsActivity">
+        </activity>
+        <activity android:name=".collections.ui.PetScreenSlideActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".home.MainActivity"></activity>
+        <activity android:name=".collections.ui.ChooseItemActivity"></activity>
         <activity android:name=".alarm_clock.AlarmClockActivity"></activity>
 
     </application>
