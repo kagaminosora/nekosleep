@@ -15,17 +15,19 @@
         <activity android:name=".home.MainActivity"></activity>
         <activity android:name=".settings.UserSettingsActivity">
         </activity>
-        <activity android:name=".collections.ui.PetScreenSlideActivity">
+        <activity android:name=".Pet.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".home.MainActivity"></activity>
         <activity android:name=".collections.ui.ChooseItemActivity"></activity>
         <activity android:name=".alarm_clock.AlarmClockActivity"></activity>
+        <service
+            android:name=".Pet.FloatWindowManagerService"
+            android:enabled="true"></service>
 
     </application>
-
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 </manifest>
