@@ -8,121 +8,99 @@
 
     <GridLayout
         android:id="@+id/gl_pets"
-        android:columnCount="4"
-        android:rowCount="8"
-        android:alignmentMode="alignMargins"
-        android:columnOrderPreserved="false"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_height="512dp"
+        android:layout_gravity="center"
         android:layout_margin="6dp"
-        >
+        android:alignmentMode="alignMargins"
+        android:columnCount="2"
+        android:columnOrderPreserved="false"
+        android:rowCount="2">
 
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:layout_margin="10dp"
+            android:layout_gravity="center"
+            android:layout_margin="20dp"
             app:cardCornerRadius="4dp"
             app:cardElevation="8dp">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/default_cat" />
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:layout_margin="10dp"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="8dp">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/default_cat" />
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:layout_margin="10dp"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="8dp">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/default_cat" />
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:layout_margin="10dp"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="8dp">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/default_cat" />
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:layout_margin="10dp"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="8dp">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/default_cat" />
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:layout_margin="10dp"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="8dp">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/default_cat" />
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:layout_margin="10dp"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="8dp">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/default_cat" />
+
+            <TextView
+                android:id="@+id/pb_name0"
+                android:layout_width="170dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:drawableTop="@drawable/default_cat"
+                android:drawablePadding="50dp"
+                android:paddingHorizontal="40dp"
+                android:paddingTop="50dp"
+                android:paddingBottom="20dp"
+                android:text="@string/default_pb_name"
+                android:textAlignment="center" />
         </androidx.cardview.widget.CardView>
 
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="8dp">
+
+            <TextView
+                android:id="@+id/pb_name1"
+                android:layout_width="170dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:drawableTop="@drawable/default_cat"
+                android:drawablePadding="50dp"
+                android:paddingHorizontal="40dp"
+                android:paddingTop="50dp"
+                android:paddingBottom="20dp"
+                android:text="@string/default_pb_name"
+                android:textAlignment="center" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="170dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="8dp">
+
+            <TextView
+                android:id="@+id/pb_name2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawableTop="@drawable/default_cat"
+                android:drawablePadding="40dp"
+                android:paddingHorizontal="50dp"
+                android:paddingTop="50dp"
+                android:paddingBottom="20dp"
+                android:text="@string/default_pb_name"
+                android:textAlignment="center" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="170dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="8dp">
+
+            <TextView
+                android:id="@+id/pb_name3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawableTop="@drawable/default_cat"
+                android:drawablePadding="50dp"
+                android:paddingHorizontal="40dp"
+                android:paddingTop="50dp"
+                android:paddingBottom="20dp"
+                android:text="@string/default_pb_name"
+                android:textAlignment="center" />
+        </androidx.cardview.widget.CardView>
 
     </GridLayout>
 

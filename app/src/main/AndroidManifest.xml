@@ -10,7 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".collections.PetScreenSlideActivity">
+        <activity android:name=".collections.ui.PetScreenSlideActivity">
         </activity>
         <activity android:name=".home.MainActivity"></activity>
         <activity android:name=".settings.UserSettingsActivity">

@@ -1,4 +1,4 @@
-package xjtlu.eevee.nekosleep.collections;
+package xjtlu.eevee.nekosleep.collections.ui;
 
 import android.view.View;
 import android.view.ViewGroup;
