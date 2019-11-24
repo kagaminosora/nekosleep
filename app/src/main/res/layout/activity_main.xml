@@ -28,6 +28,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/pb_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/button"
+        app:layout_constraintLeft_toRightOf="@+id/button"
+        android:text="PetBook"/>
 
+    <Button
+        android:id="@+id/setting_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/pb_button"
+        app:layout_constraintEnd_toEndOf="@+id/button"
+        app:layout_constraintLeft_toRightOf="@+id/button"
+        android:text="Settings"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

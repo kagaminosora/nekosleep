@@ -1,14 +1,19 @@
 package xjtlu.eevee.nekosleep.collections.ui;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.os.PersistableBundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,6 +43,7 @@ public class ChooseItemActivity extends AppCompatActivity {
     ImageView chosenPet;
     ImageView chosenItem;
     GridLayout itemGrid;
+    TextView cItemTV;
 
 
     public void onCreate(Bundle savedInstanceState){
@@ -78,6 +84,8 @@ public class ChooseItemActivity extends AppCompatActivity {
         setPetImg();
         chosenItem = findViewById(R.id.img_cii);
         initGridLayout();
+        cItemTV = findViewById(R.id.tv_choose_item);
+        initChooseItemTV();
     }
 
     public void setPetImg(){
@@ -138,6 +146,39 @@ public class ChooseItemActivity extends AppCompatActivity {
                         },
                         throwable -> Log.e(TAG, "Unable to load image", throwable)));
         itemDao.getItemByPetId(petId);
+    }
+
+    public void initChooseItemTV(){
+        Drawable closeIcon = cItemTV.getCompoundDrawables()[0];
+        cItemTV.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getX() < closeIcon.getBounds().width()+ view.getPaddingLeft()
+                        && motionEvent.getX() > view.getPaddingLeft()
+                        && motionEvent.getY() < closeIcon.getBounds().height() + view.getPaddingBottom()
+                        && motionEvent.getY() > view.getPaddingBottom()){
+                    savePreferences();
+
+                    finish();
+                }
+                return false;
+            }
+
+            public boolean performClick(){
+                return false;
+            }
+        });
+    }
+
+    public void savePreferences(){
+        SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
+        SharedPreferences.Editor editor =  sp.edit();
+        editor.putString("petId", petId);
+        editor.putString("itemId", itemId);
+        editor.commit();
+        //String petIdSP = sp.getString("petId","empty");
+        //String itemIdSP = sp.getString("itemId","empty");
+        //Toast.makeText(getApplicationContext(),petIdSP+", "+itemIdSP, Toast.LENGTH_SHORT).show();
     }
 
     public void setItemId(String itemId){

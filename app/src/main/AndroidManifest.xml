@@ -12,10 +12,10 @@
         android:theme="@style/AppTheme">
         <activity android:name=".collections.ui.PetScreenSlideActivity">
         </activity>
-        <activity android:name=".home.MainActivity"></activity>
+        <activity android:name=".Pet.MainActivity"></activity>
         <activity android:name=".settings.UserSettingsActivity">
         </activity>
-        <activity android:name=".Pet.MainActivity">
+        <activity android:name=".home.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
