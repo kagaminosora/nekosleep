@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import xjtlu.eevee.nekosleep.R;
+import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,6 +34,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         checkAndRequirePermission();
+
+        //test button to settings
+        Button settingButton = findViewById(R.id.button2);
+        settingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,
+                        UserSettingsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
     }
 
     private void requirePermission () {

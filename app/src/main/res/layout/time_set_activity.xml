@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="xjtlu.eevee.nekosleep.alarm_clock.AlarmClockActivity">
+    tools:context="xjtlu.eevee.nekosleep.alarm_clock.TimeSetActivity">
 
     <TextView
         android:id="@+id/date_tv"
@@ -16,7 +16,7 @@
         android:gravity="center"
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
-        android:text="@string/set_time"/>
+        android:text="@string/sleep_duration"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -33,7 +33,7 @@
             android:id="@+id/tv_repeat"
             style="@style/item_text_style"
             android:layout_alignParentLeft="true"
-            android:text="@string/set_repeat"/>
+            android:text="@string/set_sleep_time"/>
 
         <TextView
             android:id="@+id/arrow_one"
@@ -69,7 +69,7 @@
             android:id="@+id/ring_tv"
             style="@style/item_text_style"
             android:layout_alignParentLeft="true"
-            android:text="@string/set_ring"/>
+            android:text="@string/set_wake_up_time"/>
 
         <TextView
             android:id="@+id/arrow_two"
@@ -103,6 +103,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        android:text="Confirm"/>
+        android:text="@string/button_confirm"/>
 
 </LinearLayout>

@@ -16,7 +16,7 @@ import java.util.Date;
 
 import xjtlu.eevee.nekosleep.R;
 
-public class AlarmClockActivity extends AppCompatActivity implements View.OnClickListener {
+public class TimeSetActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView date_tv;
     private TimePickerView pvTime;
     private RelativeLayout repeat_rl, ring_rl;
@@ -30,7 +30,7 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.alarm_main_activity);
+        setContentView(R.layout.time_set_activity);
         allLayout = (LinearLayout) findViewById(R.id.all_layout);
         set_btn = (Button) findViewById(R.id.set_btn);
         set_btn.setOnClickListener(this);
@@ -103,7 +103,7 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
                             .parseInt(times[1]), i, Integer.parseInt(weeks[i]), "Alarm Clock", ring);
                 }
             }
-            Toast.makeText(this, "Alarm clock set successfully", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "sleep time set successfully", Toast.LENGTH_LONG).show();
         }
 
     }
