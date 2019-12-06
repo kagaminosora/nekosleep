@@ -3,6 +3,10 @@
     <string name="pager_dot_icon">DotIcon</string>
     <string name="pet_collection">Pets</string>
     <string name="default_pb_name">Nico</string>
+    <string name="share_img">Shared Image</string>
+    <string name="share_QR">QR Code</string>
+    <string name="send_to">Share</string>
+
     <string name="choose_item">Choose Item</string>
     <string name="pref_key_alarm_time">Set the alarm time</string>
     <string name="pref_key_sleep_time">Set the sleep time</string>

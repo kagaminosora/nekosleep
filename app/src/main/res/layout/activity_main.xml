@@ -26,9 +26,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.517"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" /><![CDATA[
+        app:layout_constraintTop_toTopOf="parent" />
 
-    android:id="@+id/pb_button"
+    <Button
+        android:id="@+id/pb_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
@@ -36,22 +37,22 @@
         app:layout_constraintLeft_toRightOf="@+id/button"
         android:text="PetBook"/>
 
-    ]]>
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="to settings"
-        tools:layout_editor_absoluteX="162dp"
-        tools:layout_editor_absoluteY="258dp" />
-
     <Button
         android:id="@+id/setting_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="@+id/button"
         app:layout_constraintLeft_toRightOf="@+id/button"
+        app:layout_constraintTop_toBottomOf="@+id/pb_button"
         android:text="Settings"/>
+
+    <Button
+        android:id="@+id/result_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/button"
+        app:layout_constraintLeft_toRightOf="@+id/button"
+        app:layout_constraintTop_toBottomOf="@+id/button"
+        android:text="Result"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

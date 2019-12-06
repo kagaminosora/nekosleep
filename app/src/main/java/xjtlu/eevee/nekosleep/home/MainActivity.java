@@ -24,6 +24,7 @@ import xjtlu.eevee.nekosleep.Pet.FloatWindowManagerService;
 import xjtlu.eevee.nekosleep.R;
 import xjtlu.eevee.nekosleep.collections.AssetReader;
 import xjtlu.eevee.nekosleep.collections.ui.PetScreenSlideActivity;
+import xjtlu.eevee.nekosleep.result.SleepResultActivity;
 import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     Button btPetBook;
     Button btSettings;
     Button btFloatWindow;
+    Button btResult;
+
     int OVERLAY_PERMISSION_REQ_CODE = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +43,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void init(){
-        //btPetBook = findViewById(R.id.pb_button);
+        btPetBook = findViewById(R.id.pb_button);
         btSettings = findViewById(R.id.setting_button);
         btFloatWindow = findViewById(R.id.button);
+        btResult = findViewById(R.id.result_button);
+        btPetBook = findViewById(R.id.pb_button);
+
         btPetBook.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -66,6 +72,14 @@ public class MainActivity extends AppCompatActivity {
                 //requirePermission();
                 Intent intent = new Intent(MainActivity.this, FloatWindowManagerService.class);
                 startService(intent);
+            }
+        });
+
+        btResult.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, SleepResultActivity.class);
+                startActivity(intent);
             }
         });
     }

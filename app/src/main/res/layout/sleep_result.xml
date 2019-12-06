@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+<TextView
+    android:id="@+id/title_result"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/app_name"
+    android:layout_gravity="center"
+    android:textAlignment="center"
+    android:drawableLeft="@drawable/icon_close"
+    android:drawableRight="@drawable/icon_share"
+    android:drawableStart="@drawable/icon_close"
+    android:drawableEnd="@drawable/icon_share"/>
+
+    <ImageView
+        android:id="@+id/img_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/choose_item"
+        android:src="@drawable/default_cat"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/tv_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:text="@string/choose_item"
+        />
+</LinearLayout>
