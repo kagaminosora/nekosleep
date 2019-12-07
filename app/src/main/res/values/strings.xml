@@ -16,6 +16,8 @@
     <string name="settings_tittle">  Settings</string>
     <string name="about_us">About us</string>
     <string name="button_confirm">Confirm</string>
+    <string name="once">Once</string>
+    <string name="everyday">Everyday</string>
     <string name="mon">Monday</string>
     <string name="tue">Tuesday</string>
     <string name="wed">Wednesday</string>
@@ -23,8 +25,12 @@
     <string name="fri">Friday</string>
     <string name="sat">Sunday</string>
     <string name="sun">Saturday</string>
+    <string name="pickerview_cancel">Cancel</string>
+    <string name="pickerview_submit">Submit</string>
+    <string name="pickerview_hours">Hour</string>
+    <string name="pickerview_minutes">Min</string>
     <string name="cycle_sure">Confirm</string>
     <string name="vibration">Vibration</string>
-    <string name="ring">Wake up time</string>
+    <string name="ring">Ring</string>
     <string name="team_name">Team Eevee!</string>
 </resources>

@@ -3,6 +3,8 @@
     package="xjtlu.eevee.nekosleep">
 
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
@@ -28,6 +30,9 @@
         <activity android:name=".collections.ui.ChooseItemActivity" />
         <activity android:name=".alarm_clock.AlarmClockActivity" />
         <activity android:name=".alarm_clock.TimeSetActivity" />
+        <service
+            android:name=".alarm_clock.AlarmClockService"
+            android:enabled="true" />
         <service
             android:name=".Pet.FloatWindowManagerService"
             android:enabled="true" />
