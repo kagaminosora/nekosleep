@@ -5,14 +5,18 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;
@@ -25,6 +29,9 @@ import xjtlu.eevee.nekosleep.collections.AssetReader;
 import xjtlu.eevee.nekosleep.collections.persistence.Item;
 import xjtlu.eevee.nekosleep.collections.persistence.ItemDao;
 import xjtlu.eevee.nekosleep.collections.persistence.PetBookDatabase;
+import xjtlu.eevee.nekosleep.collections.persistence.PetDao;
+import xjtlu.eevee.nekosleep.menu.MainActivity;
+import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 
 public class ItemScreenSlideActivity extends AppCompatActivity {
     Context appContext;
@@ -44,7 +51,7 @@ public class ItemScreenSlideActivity extends AppCompatActivity {
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.view_pager_item_activity);
+        setContentView(R.layout.activity_items);
         init();
     }
 
