@@ -8,8 +8,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bigkoo.pickerview.TimePickerView;
-import com.loonggg.lib.alarmmanager.clock.AlarmManagerUtil;
+import xjtlu.eevee.nekosleep.alarm_clock.view.SelectRemindCyclePopup;
+import xjtlu.eevee.nekosleep.alarm_clock.view.SelectRemindWayPopup;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,6 +28,8 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
     private String time;
     private int cycle;
     private int ring;
+
+    private AlarmManagerUtils alarmManagerUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,26 +91,34 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void setClock() {
+        alarmManagerUtils = AlarmManagerUtils.getInstance(this);
+        alarmManagerUtils.createGetUpAlarmManager();
         if (time != null && time.length() > 0) {
             String[] times = time.split(":");
             if (cycle == 0) {//是每天的闹钟
-                AlarmManagerUtil.setAlarm(this, 0, Integer.parseInt(times[0]), Integer.parseInt
-                        (times[1]), 0, 0, "Alarm Clock", ring);
+                alarmManagerUtils.getUpAlarmManagerStartWork(this, 0, Integer.parseInt(times[0]), Integer.parseInt
+                        (times[1]), 0, 0, "闹钟响了", ring);
             } if(cycle == -1){//是只响一次的闹钟
-                AlarmManagerUtil.setAlarm(this, 1, Integer.parseInt(times[0]), Integer.parseInt
-                        (times[1]), 0, 0, "Alarm Clock", ring);
+                System.out.println("=========================================================================");
+                System.out.println("=========================================================================");
+                System.out.println("check0");
+                System.out.println("=========================================================================");
+                alarmManagerUtils.getUpAlarmManagerStartWork(this, 0, Integer.parseInt(times[0]), Integer.parseInt
+                        (times[1]), 0, 0, "闹钟响了", ring);
             }else {//多选，周几的闹钟
                 String weeksStr = parseRepeat(cycle, 1);
                 String[] weeks = weeksStr.split(",");
                 for (int i = 0; i < weeks.length; i++) {
-                    AlarmManagerUtil.setAlarm(this, 2, Integer.parseInt(times[0]), Integer
-                            .parseInt(times[1]), i, Integer.parseInt(weeks[i]), "Alarm Clock", ring);
+                    alarmManagerUtils.getUpAlarmManagerStartWork(this, 2, Integer.parseInt(times[0]), Integer
+                            .parseInt(times[1]), i, Integer.parseInt(weeks[i]), "闹钟响了", ring);
                 }
             }
-            Toast.makeText(this, "Alarm clock set successfully", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "闹钟设置成功", Toast.LENGTH_LONG).show();
         }
-
+        //TEST CODE
+        //Toast.makeText(this, "TEST闹钟设置成功", Toast.LENGTH_LONG).show();
     }
+
 
     public void selectRemindCycle() {
         final SelectRemindCyclePopup fp = new SelectRemindCyclePopup(this);
@@ -153,12 +165,12 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
                         fp.dismiss();
                         break;
                     case 8:
-                        tv_repeat_value.setText("Every day");
+                        tv_repeat_value.setText("每天");
                         cycle = 0;
                         fp.dismiss();
                         break;
                     case 9:
-                        tv_repeat_value.setText("Once");
+                        tv_repeat_value.setText("只响一次");
                         cycle = -1;
                         fp.dismiss();
                         break;
@@ -168,6 +180,7 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
             }
         });
     }
+
 
     public void selectRingWay() {
         SelectRemindWayPopup fp = new SelectRemindWayPopup(this);
@@ -180,12 +193,12 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
                 switch (flag) {
                     // 震动
                     case 0:
-                        tv_ring_value.setText("Vibration");
+                        tv_ring_value.setText("震动");
                         ring = 0;
                         break;
                     // 铃声
                     case 1:
-                        tv_ring_value.setText("Ring");
+                        tv_ring_value.setText("铃声");
                         ring = 1;
                         break;
                     default:
@@ -207,60 +220,60 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
             repeat = 127;
         }
         if (repeat % 2 == 1) {
-            cycle = "Monday";
+            cycle = "周一";
             weeks = "1";
         }
         if (repeat % 4 >= 2) {
             if ("".equals(cycle)) {
-                cycle = "Tuesday";
+                cycle = "周二";
                 weeks = "2";
             } else {
-                cycle = cycle + "," + "Tuesday";
+                cycle = cycle + "," + "周二";
                 weeks = weeks + "," + "2";
             }
         }
         if (repeat % 8 >= 4) {
             if ("".equals(cycle)) {
-                cycle = "Wednesday";
+                cycle = "周三";
                 weeks = "3";
             } else {
-                cycle = cycle + "," + "Wednesday";
+                cycle = cycle + "," + "周三";
                 weeks = weeks + "," + "3";
             }
         }
         if (repeat % 16 >= 8) {
             if ("".equals(cycle)) {
-                cycle = "Thursday";
+                cycle = "周四";
                 weeks = "4";
             } else {
-                cycle = cycle + "," + "Thursday";
+                cycle = cycle + "," + "周四";
                 weeks = weeks + "," + "4";
             }
         }
         if (repeat % 32 >= 16) {
             if ("".equals(cycle)) {
-                cycle = "Friday";
+                cycle = "周五";
                 weeks = "5";
             } else {
-                cycle = cycle + "," + "Friday";
+                cycle = cycle + "," + "周五";
                 weeks = weeks + "," + "5";
             }
         }
         if (repeat % 64 >= 32) {
             if ("".equals(cycle)) {
-                cycle = "Sunday";
+                cycle = "周六";
                 weeks = "6";
             } else {
-                cycle = cycle + "," + "Sunday";
+                cycle = cycle + "," + "周六";
                 weeks = weeks + "," + "6";
             }
         }
         if (repeat / 64 == 1) {
             if ("".equals(cycle)) {
-                cycle = "Saturday";
+                cycle = "周日";
                 weeks = "7";
             } else {
-                cycle = cycle + "," + "Saturday";
+                cycle = cycle + "," + "周日";
                 weeks = weeks + "," + "7";
             }
         }
@@ -269,3 +282,4 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
     }
 
 }
+

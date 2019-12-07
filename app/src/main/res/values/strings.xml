@@ -3,6 +3,18 @@
     <string name="pager_dot_icon">DotIcon</string>
     <string name="pet_collection">Pets</string>
     <string name="default_pb_name">Nico</string>
+
+    <string name="default_item">Item</string>
+
+    <string name="share_img">Shared Image</string>
+    <string name="share_text_pet">I got a new pet in NekoSleep!</string>
+    <string name="share_text_item">I got a new item in NekoSleep!</string>
+    <string name="share_QR">QR Code</string>
+    <string name="send_to">Share</string>
+
+    <string name="result_get_pet">Congratulations! You get a new pet!</string>
+    <string name="result_get_item">Congratulations! You get a new item!</string>
+
     <string name="choose_item">Choose Item</string>
     <string name="pref_key_alarm_time">Set the alarm time</string>
     <string name="pref_key_sleep_time">Set the sleep time</string>
@@ -33,4 +45,20 @@
     <string name="vibration">Vibration</string>
     <string name="ring">Ring</string>
     <string name="team_name">Team Eevee!</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">NekoSleep</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_share">Share</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_pets">Pets</string>
+    <string name="menu_items">Items</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_send">Send</string>
+
+    <string name="home_sleep">Sleep</string>
+    <string name="home_wake">Wake</string>
 </resources>

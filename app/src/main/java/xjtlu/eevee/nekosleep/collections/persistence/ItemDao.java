@@ -12,7 +12,7 @@ import io.reactivex.Flowable;
 @Dao
 public interface ItemDao {
     @Query("SELECT * FROM book_item")
-    List<Item> getAll();
+    Flowable<List<Item>> getAll();
 
     @Query("SELECT * FROM book_item WHERE owner = (:petId)")
     Flowable<List<Item>> getItemByPetId(String petId);

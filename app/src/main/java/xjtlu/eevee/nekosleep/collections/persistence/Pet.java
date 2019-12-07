@@ -35,7 +35,7 @@ public class Pet {
 
     public String getId(){ return petId; }
 
-    public String getPetName() { System.out.println("get name");return name; }
+    public String getPetName() { return name; }
 
     public String getImageName() { return imageName; }
 

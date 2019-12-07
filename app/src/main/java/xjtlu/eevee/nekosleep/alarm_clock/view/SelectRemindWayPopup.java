@@ -1,4 +1,4 @@
-package xjtlu.eevee.nekosleep.alarm_clock;
+package xjtlu.eevee.nekosleep.alarm_clock.view;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;

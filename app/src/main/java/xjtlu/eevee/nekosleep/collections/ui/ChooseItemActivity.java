@@ -1,23 +1,27 @@
 package xjtlu.eevee.nekosleep.collections.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.ConditionVariable;
 import android.os.PersistableBundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -26,8 +30,11 @@ import xjtlu.eevee.nekosleep.R;
 import xjtlu.eevee.nekosleep.collections.AssetReader;
 import xjtlu.eevee.nekosleep.collections.persistence.Item;
 import xjtlu.eevee.nekosleep.collections.persistence.ItemDao;
+import xjtlu.eevee.nekosleep.collections.persistence.Pet;
 import xjtlu.eevee.nekosleep.collections.persistence.PetBookDatabase;
 import xjtlu.eevee.nekosleep.collections.persistence.PetDao;
+import xjtlu.eevee.nekosleep.menu.MainActivity;
+import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 
 public class ChooseItemActivity extends AppCompatActivity {
     private final CompositeDisposable disposable = new CompositeDisposable();
@@ -38,10 +45,12 @@ public class ChooseItemActivity extends AppCompatActivity {
     private static final String TAG = PetScreenSlideActivity.class.getSimpleName();
     static ImageView previousBgView;
 
+    Pet chosenPet;
+    Item chosenItem;
     String petId;
     String itemId;
-    ImageView chosenPet;
-    ImageView chosenItem;
+    ImageView chosenPetImg;
+    ImageView chosenItemImg;
     GridLayout itemGrid;
     TextView cItemTV;
 
@@ -52,6 +61,7 @@ public class ChooseItemActivity extends AppCompatActivity {
         petId = bundle.getString("petId");
         setContentView(R.layout.choose_item);
         init();
+
     }
 
     @Override
@@ -80,38 +90,37 @@ public class ChooseItemActivity extends AppCompatActivity {
     public void init(){
         appContext = getApplicationContext();
         initPetDao();
-        chosenPet = findViewById(R.id.img_cip);
-        setPetImg();
-        chosenItem = findViewById(R.id.img_cii);
+        initObjects();
+        chosenPetImg = findViewById(R.id.img_cip);
+        chosenItemImg = findViewById(R.id.img_cii);
         initGridLayout();
         cItemTV = findViewById(R.id.tv_choose_item);
         initChooseItemTV();
     }
 
-    public void setPetImg(){
+    public void initObjects(){
         disposable.add(petDao.getPetById(petId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pet -> {
-                            Drawable pet_img = AssetReader.getDrawableFromAssets(
-                                    appContext, "petbook_img/" + pet.getImageName() + ".png");
-                            pet_img.setBounds(0,0,pet_img.getMinimumWidth(),pet_img.getMinimumHeight());
-                            chosenPet.setImageDrawable(pet_img);
+                            chosenPet = pet;
+                            setPetImg();
                         },
                         throwable -> Log.e(TAG, "Unable to load image", throwable)));
     }
 
-    public void setItemImg(String itemId, ImageView itemView){
-        disposable.add(itemDao.findById(itemId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(item -> {
-                            Drawable item_img = AssetReader.getDrawableFromAssets(
-                                    appContext, "itembook_img/" + item.getImageName() + ".png");
-                            item_img.setBounds(0,0,item_img.getIntrinsicWidth(),item_img.getIntrinsicHeight());
-                            itemView.setImageDrawable(item_img);
-                        },
-                        throwable -> Log.e(TAG, "Unable to load image", throwable)));
+    public void setPetImg(){
+        Drawable pet_img = AssetReader.getDrawableFromAssets(
+                appContext, "petbook_img/" + chosenPet.getImageName() + ".png");
+        pet_img.setBounds(0,0,pet_img.getMinimumWidth(),pet_img.getMinimumHeight());
+        chosenPetImg.setImageDrawable(pet_img);
+    }
+
+    public void setItemImg(String itemName, ImageView itemView){
+        Drawable item_img = AssetReader.getDrawableFromAssets(
+                appContext, "itembook_img/" + itemName + ".png");
+        item_img.setBounds(0,0,item_img.getIntrinsicWidth(),item_img.getIntrinsicHeight());
+        itemView.setImageDrawable(item_img);
     }
 
     public void initGridLayout(){
@@ -122,27 +131,28 @@ public class ChooseItemActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(itemList -> {
-                            for (int i=0; i<itemList.size(); i++){
+                        for (int i=0; i<itemList.size(); i++){
+                            Item item = itemList.get(i);
+                            if(item.active) {
                                 CardView itemCardView = (CardView) itemGrid.getChildAt(i);
                                 ImageView bgView = (ImageView) itemCardView.getChildAt(0);
                                 ImageView itemView = (ImageView) itemCardView.getChildAt(1);
-
-                                String itemId = itemList.get(i).getId();
-                                setItemImg(itemId, itemView);
+                                setItemImg(item.getImageName(), itemView);
                                 itemCardView.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
                                         Drawable bg = getResources().getDrawable(R.drawable.crv_cii_bg);
                                         bgView.setImageDrawable(bg);
-                                        if(previousBgView!=null) {
+                                        if (previousBgView != null) {
                                             previousBgView.setImageDrawable(null);
                                         }
                                         previousBgView = bgView;
-                                        setItemImg(itemId, chosenItem);
-                                        setItemId(itemId);
+                                        chosenItem = item;
+                                        setItemImg(item.getImageName(), chosenItemImg);
                                     }
                                 });
                             }
+                        }
                         },
                         throwable -> Log.e(TAG, "Unable to load image", throwable)));
         itemDao.getItemByPetId(petId);
@@ -158,7 +168,6 @@ public class ChooseItemActivity extends AppCompatActivity {
                         && motionEvent.getY() < closeIcon.getBounds().height() + view.getPaddingBottom()
                         && motionEvent.getY() > view.getPaddingBottom()){
                     savePreferences();
-
                     finish();
                 }
                 return false;
@@ -174,7 +183,14 @@ public class ChooseItemActivity extends AppCompatActivity {
         SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
         SharedPreferences.Editor editor =  sp.edit();
         editor.putString("petId", petId);
-        editor.putString("itemId", itemId);
+        editor.putString("petImgName", chosenPet.getImageName());
+        if(chosenItem == null){
+            editor.putString("itemId", "empty");
+            editor.putString("itemImgName", "empty");
+        }else {
+            editor.putString("itemId", itemId);
+            editor.putString("itemImgName", chosenItem.getImageName());
+        }
         editor.commit();
         //String petIdSP = sp.getString("petId","empty");
         //String itemIdSP = sp.getString("itemId","empty");

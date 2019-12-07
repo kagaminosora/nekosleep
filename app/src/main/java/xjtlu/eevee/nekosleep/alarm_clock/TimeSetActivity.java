@@ -15,6 +15,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import xjtlu.eevee.nekosleep.R;
+import xjtlu.eevee.nekosleep.alarm_clock.view.SelectRemindCyclePopup;
+import xjtlu.eevee.nekosleep.alarm_clock.view.SelectRemindWayPopup;
 
 public class TimeSetActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView date_tv;

@@ -22,7 +22,7 @@
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:drawableRight="@null"
-            android:text="只响一次"
+            android:text="@string/once"
             android:textColor="@color/black_33"
             android:textSize="20sp"/>
 
@@ -35,7 +35,7 @@
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:drawableRight="@null"
-            android:text="每天"
+            android:text="@string/everyday"
             android:textColor="@color/black_33"
             android:textSize="20sp"/>
 

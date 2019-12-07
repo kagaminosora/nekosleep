@@ -19,6 +19,7 @@ public class ClockAlarmActivity extends Activity {
         String message = this.getIntent().getStringExtra("msg");
         int flag = this.getIntent().getIntExtra("flag", 0);
         showDialogInBroadcastReceiver(message, flag);
+
     }
 
     private void showDialogInBroadcastReceiver(String message, final int flag) {

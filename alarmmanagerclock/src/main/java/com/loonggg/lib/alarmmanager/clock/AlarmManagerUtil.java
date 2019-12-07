@@ -2,9 +2,13 @@ package com.loonggg.lib.alarmmanager.clock;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.os.SystemClock;
 
 
 import java.util.Calendar;
@@ -14,6 +18,9 @@ import java.util.Calendar;
  */
 public class AlarmManagerUtil {
     public static final String ALARM_ACTION = "com.loonggg.alarm.clock";
+    private IntentFilter intentFilter;
+    private LoongggAlarmReceiver loongggAlarmReceiver;
+    private Calendar calendar;
 
     public static void setAlarmTime(Context context, long timeInMillis, Intent intent) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -45,11 +52,19 @@ public class AlarmManagerUtil {
      */
     public static void setAlarm(Context context, int flag, int hour, int minute, int id, int
             week, String tips, int soundOrVibrator) {
-        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        System.out.println("=========================================================================");
+        System.out.println("=========================================================================");
+        System.out.println("check0.5");
+        System.out.println("=========================================================================");
+        final AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Calendar calendar = Calendar.getInstance();
         long intervalMillis = 0;
         calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get
-                (Calendar.DAY_OF_MONTH), hour, minute, 10);
+                (Calendar.DAY_OF_MONTH), hour, minute, 2);
+//        calendar.set(Calendar.HOUR_OF_DAY, hour);
+//        calendar.set(Calendar.HOUR_OF_DAY, minute);
+//        calendar.set(Calendar.SECOND,2);
+
         if (flag == 0) {
             intervalMillis = 0;
         } else if (flag == 1) {
@@ -58,15 +73,24 @@ public class AlarmManagerUtil {
             intervalMillis = 24 * 3600 * 1000 * 7;
         }
         Intent intent = new Intent(ALARM_ACTION);
-        intent.putExtra("intervalMillis", intervalMillis);
-        intent.putExtra("msg", tips);
-        intent.putExtra("id", id);
-        intent.putExtra("soundOrVibrator", soundOrVibrator);
-        PendingIntent sender = PendingIntent.getBroadcast(context, id, intent, PendingIntent
+        Bundle bundle = new Bundle();
+        bundle.putInt("id", id);
+        bundle.putLong("intervalMillis", intervalMillis);
+        //intent.putExtra("intervalMillis", intervalMillis);
+        //intent.putExtra("msg", tips);
+        //intent.putExtra("id", id);
+        bundle.putInt("soundOrVibrator", soundOrVibrator);
+        intent.putExtra("bundle", bundle);
+        final PendingIntent sender = PendingIntent.getBroadcast(context, id, intent, PendingIntent
                 .FLAG_CANCEL_CURRENT);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            am.setWindow(AlarmManager.RTC_WAKEUP, calMethod(week, calendar.getTimeInMillis()),
-                    intervalMillis, sender);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,
+                    //calMethod(week, calendar.getTimeInMillis()), sender);
+            am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,
+                    System.currentTimeMillis()+5000, sender);
+            System.out.println("=========================================================================");
+            System.out.println("week: "+ week+" currentTimeMillis: "+System.currentTimeMillis());
+            System.out.println("=========================================================================");
         } else {
             if (flag == 0) {
                 am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), sender);
@@ -75,6 +99,27 @@ public class AlarmManagerUtil {
                         ()), intervalMillis, sender);
             }
         }
+        BroadcastReceiver alarmReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                    am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,
+//                            System.currentTimeMillis()+5000, sender);
+//                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//                    am.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TIME_INTERVAL, pendingIntent);
+//                }
+                System.out.println("=========================================================================");
+                System.out.println("Received!");
+                System.out.println("=========================================================================");
+                String msg = intent.getStringExtra("msg");
+                int flag = intent.getIntExtra("soundOrVibrator", 0);
+                Intent clockIntent = new Intent(context, ClockAlarmActivity.class);
+                clockIntent.putExtra("msg", msg);
+                clockIntent.putExtra("flag", flag);
+                clockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(clockIntent);
+            }
+        };
     }
 
 
@@ -85,7 +130,7 @@ public class AlarmManagerUtil {
      */
     private static long calMethod(int weekflag, long dateTime) {
         long time = 0;
-        //weekflag == 0表示是按天为周期性的时间间隔或者是一次行的，weekfalg非0时表示每周几的闹钟并以周为时间间隔
+        //weekflag == 0表示是按天为周期性的时间间隔或者是一次行的，weekflag非0时表示每周几的闹钟并以周为时间间隔
         if (weekflag != 0) {
             Calendar c = Calendar.getInstance();
             int week = c.get(Calendar.DAY_OF_WEEK);

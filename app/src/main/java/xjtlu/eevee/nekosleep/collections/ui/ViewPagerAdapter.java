@@ -8,10 +8,10 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.List;
 
-public class PetViewPagerAdapter extends PagerAdapter {
+public class ViewPagerAdapter extends PagerAdapter {
     private List<View> pages;
 
-    public PetViewPagerAdapter(List<View> pages){
+    public ViewPagerAdapter(List<View> pages){
         this.pages = pages;
     }
 
