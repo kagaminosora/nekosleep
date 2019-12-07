@@ -1,33 +1,38 @@
 package xjtlu.eevee.nekosleep.collections.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.ConditionVariable;
 import android.os.PersistableBundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import xjtlu.eevee.nekosleep.R;
 import xjtlu.eevee.nekosleep.collections.AssetReader;
-import xjtlu.eevee.nekosleep.collections.persistence.Item;
 import xjtlu.eevee.nekosleep.collections.persistence.ItemDao;
 import xjtlu.eevee.nekosleep.collections.persistence.PetBookDatabase;
 import xjtlu.eevee.nekosleep.collections.persistence.PetDao;
+import xjtlu.eevee.nekosleep.menu.MainActivity;
+import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 
 public class ChooseItemActivity extends AppCompatActivity {
     private final CompositeDisposable disposable = new CompositeDisposable();
@@ -52,6 +57,7 @@ public class ChooseItemActivity extends AppCompatActivity {
         petId = bundle.getString("petId");
         setContentView(R.layout.choose_item);
         init();
+
     }
 
     @Override

@@ -17,12 +17,12 @@
 
         <activity android:name=".collections.ui.PetScreenSlideActivity"></activity>
         <activity android:name=".collections.ui.ChooseItemActivity" />
+        <activity android:name=".collections.ui.ItemScreenSlideActivity"/>
         <activity android:name=".result.SleepResultActivity"/>
-        <activity android:name=".share.ShareActivity"/>
-        <activity android:name=".Pet.MainActivity" />
+<!--        <activity android:name=".share.ShareActivity"/>-->
         <activity android:name=".settings.AboutUsActivity"></activity>
         <activity android:name=".settings.UserSettingsActivity"></activity>
-        <activity android:name=".home.MainActivity">
+        <activity android:name=".menu.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

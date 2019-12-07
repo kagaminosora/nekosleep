@@ -6,15 +6,21 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +33,8 @@ import xjtlu.eevee.nekosleep.collections.AssetReader;
 import xjtlu.eevee.nekosleep.collections.persistence.Pet;
 import xjtlu.eevee.nekosleep.collections.persistence.PetBookDatabase;
 import xjtlu.eevee.nekosleep.collections.persistence.PetDao;
+import xjtlu.eevee.nekosleep.menu.MainActivity;
+import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 
 public class ItemScreenSlideActivity extends AppCompatActivity {
     Context appContext;
@@ -49,8 +57,41 @@ public class ItemScreenSlideActivity extends AppCompatActivity {
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.view_pager_item_activity);
+        setContentView(R.layout.activity_items);
         init();
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+//        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, 0, 0);
+//        mDrawerToggle.syncState();
+        setSupportActionBar(toolbar);
+
+//        drawer.addDrawerListener(mDrawerToggle);
+        NavigationView navigationView = (NavigationView)findViewById(R.id.nav_view);
+//        navigationView.setItemIconTintList(null);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                switch (menuItem.getItemId()){
+                    case R.id.nav_home:
+                        Intent it = new Intent(ItemScreenSlideActivity.this, MainActivity.class);
+                        startActivity(it);
+                        return true;
+                    case R.id.nav_pets:
+                        Intent it1 = new Intent(ItemScreenSlideActivity.this, PetScreenSlideActivity.class);
+                        startActivity(it1);
+                        return true;
+                    case R.id.nav_items:
+                        Intent it2 = new Intent(ItemScreenSlideActivity.this, ItemScreenSlideActivity.class);
+                        startActivity(it2);
+                        return true;
+                    case R.id.nav_settings:
+                        Intent it3 = new Intent(ItemScreenSlideActivity.this, UserSettingsActivity.class);
+                        startActivity(it3);
+                        return true;
+                }
+                return false;
+            }
+        });
     }
 
     @Override
