@@ -16,8 +16,8 @@ import xjtlu.eevee.nekosleep.R;
 
 public class ShareView extends FrameLayout {
 
-    private final int IMAGE_WIDTH = 400;
-    private final int IMAGE_HEIGHT = 600;
+    private final int IMAGE_WIDTH = 1080;
+    private final int IMAGE_HEIGHT = 1920;
 
     private TextView shareTV;
     private ImageView shareImg;

@@ -2,12 +2,14 @@ package xjtlu.eevee.nekosleep.home;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -15,14 +17,20 @@ import android.os.Bundle;
 
 import android.provider.Settings;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import xjtlu.eevee.nekosleep.Pet.FloatWindowManagerService;
 import xjtlu.eevee.nekosleep.R;
 import xjtlu.eevee.nekosleep.collections.AssetReader;
+import xjtlu.eevee.nekosleep.collections.ui.ChooseItemActivity;
+import xjtlu.eevee.nekosleep.collections.ui.ItemScreenSlideActivity;
 import xjtlu.eevee.nekosleep.collections.ui.PetScreenSlideActivity;
 import xjtlu.eevee.nekosleep.result.SleepResultActivity;
 import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
@@ -33,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
     Button btSettings;
     Button btFloatWindow;
     Button btResult;
+    Button btItems;
+
+    CardView cvPet;
+    private final CompositeDisposable disposable = new CompositeDisposable();
 
     int OVERLAY_PERMISSION_REQ_CODE = 0;
     @Override
@@ -48,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         btFloatWindow = findViewById(R.id.button);
         btResult = findViewById(R.id.result_button);
         btPetBook = findViewById(R.id.pb_button);
+        btItems = findViewById(R.id.item_button);
+        cvPet = findViewById(R.id.cv_pet);
 
         btPetBook.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -79,9 +93,67 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, SleepResultActivity.class);
+                Bundle bundle = new Bundle();
+                SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
+                String type = sp.getString("nextType", "empty");
+                if(type.equals("empty")){
+                    bundle.putString("type", "pet");
+                    bundle.putString("petId", "00000000");
+                }else if(type.equals("pet")){
+                    bundle.putString("type", "pet");
+                    bundle.putString("petId", sp.getString("nextItemId", "empty"));
+                }else if(type.equals("item")){
+                    bundle.putString("type", "item");
+                    bundle.putString("itemId", sp.getString("nextItemId", "empty"));
+                }
+                intent.putExtras(bundle);
                 startActivity(intent);
             }
         });
+
+        btItems.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ItemScreenSlideActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        cvPet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        initPetView();
+    }
+
+    public void initPetView(){
+        SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
+        String petId = sp.getString("petId", "empty");
+        String itemId = sp.getString("itemId", "empty");
+        String petImgName = sp.getString("petImgName", "empty");
+        String itemImgName = sp.getString("itemImgName", "empty");
+        setImg((ImageView) cvPet.getChildAt(0), petImgName, "pet");
+        setImg((ImageView) cvPet.getChildAt(1), itemImgName, "item");
+    }
+
+    public void setImg(ImageView view, String name, String type){
+        if(name.equals("empty")) {
+            view.setImageDrawable(null);
+        }else {
+            Drawable item_img = AssetReader.getDrawableFromAssets(
+                    getApplicationContext(), type + "book_img/" + name + ".png");
+            item_img.setBounds(0, 0, item_img.getIntrinsicWidth(), item_img.getIntrinsicHeight());
+            view.setImageDrawable(item_img);
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        initPetView();
     }
 
     private void requirePermission () {

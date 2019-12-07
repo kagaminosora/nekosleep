@@ -3,9 +3,17 @@
     <string name="pager_dot_icon">DotIcon</string>
     <string name="pet_collection">Pets</string>
     <string name="default_pb_name">Nico</string>
+
+    <string name="default_item">Item</string>
+
     <string name="share_img">Shared Image</string>
+    <string name="share_text_pet">I got a new pet in NekoSleep!</string>
+    <string name="share_text_item">I got a new item in NekoSleep!</string>
     <string name="share_QR">QR Code</string>
     <string name="send_to">Share</string>
+
+    <string name="result_get_pet">Congratulations! You get a new pet!</string>
+    <string name="result_get_item">Congratulations! You get a new item!</string>
 
     <string name="choose_item">Choose Item</string>
     <string name="pref_key_alarm_time">Set the alarm time</string>

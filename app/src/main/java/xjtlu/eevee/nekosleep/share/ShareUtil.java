@@ -29,16 +29,24 @@ import xjtlu.eevee.nekosleep.R;
 
 public class ShareUtil{
     Context context;
+    Drawable itemImg;
+    String type;
 
-    public ShareUtil(Context context){
+    public ShareUtil(Context context, Drawable itemImg, String type){
         this.context = context;
+        this.itemImg = itemImg;
+        this.type = type;
     }
 
     public Intent createShareImage(){
         ShareView shareView = new ShareView(context);
-        shareView.setInfo("This is my new pet Nico!");
+        if(type.equals("pet")) {
+            shareView.setInfo(context.getResources().getString(R.string.share_text_pet));
+        }else if(type.equals("item")){
+            shareView.setInfo(context.getResources().getString(R.string.share_text_item));
+        }
         Drawable cat = context.getResources().getDrawable(R.drawable.default_cat);
-        shareView.setImg(cat);
+        shareView.setImg(itemImg);
         shareView.setQRCode(generateQRCode());
         final Bitmap image = shareView.createImage();
         final Uri uri = saveImage(image);

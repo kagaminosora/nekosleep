@@ -26,7 +26,6 @@
             app:cardElevation="8dp">
 
             <TextView
-                android:id="@+id/pb_name0"
                 android:layout_width="170dp"
                 android:layout_height="200dp"
                 android:layout_gravity="center"
@@ -47,7 +46,6 @@
             app:cardElevation="8dp">
 
             <TextView
-                android:id="@+id/pb_name1"
                 android:layout_width="170dp"
                 android:layout_height="200dp"
                 android:layout_gravity="center"
@@ -68,7 +66,6 @@
             app:cardElevation="8dp">
 
             <TextView
-                android:id="@+id/pb_name2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -89,7 +86,6 @@
             app:cardElevation="8dp">
 
             <TextView
-                android:id="@+id/pb_name3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

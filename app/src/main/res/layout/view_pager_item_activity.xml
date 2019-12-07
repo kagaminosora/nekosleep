@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:text="@string/pet_collection"
+        android:text="@string/default_item"
         android:layout_marginTop="20dp"
         android:textSize="20dp"
         />
@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="550dp"
         android:layout_marginTop="10dp"
-        android:id="@+id/view_pager_pets">
+        android:id="@+id/view_pager_items">
     </androidx.viewpager.widget.ViewPager>
 
     <LinearLayout
@@ -27,13 +27,6 @@
         android:gravity="center"
         android:layout_marginTop="10dp"
         >
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="5dp"
-            android:src="@drawable/pager_dot"
-            android:contentDescription="@string/pager_dot_icon"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

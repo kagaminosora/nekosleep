@@ -55,4 +55,35 @@
         app:layout_constraintTop_toBottomOf="@+id/button"
         android:text="Result"/>
 
+    <Button
+        android:id="@+id/item_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/result_button"
+        app:layout_constraintEnd_toEndOf="@+id/button"
+        app:layout_constraintLeft_toRightOf="@+id/button"
+        android:text="Items"/>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_pet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/item_button"
+        app:layout_constraintEnd_toEndOf="@+id/button">
+        <ImageView
+            android:id="@+id/img_main_pet"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/default_cat"/>
+
+        <ImageView
+            android:id="@+id/img_main_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:src="@drawable/default_item" />
+    </androidx.cardview.widget.CardView>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

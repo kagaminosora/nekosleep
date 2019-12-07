@@ -2,7 +2,6 @@ package xjtlu.eevee.nekosleep.collections.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -27,8 +25,6 @@ import java.util.List;
 import io.reactivex.schedulers.Schedulers;
 import xjtlu.eevee.nekosleep.R;
 import xjtlu.eevee.nekosleep.collections.AssetReader;
-import xjtlu.eevee.nekosleep.collections.Injection;
-import xjtlu.eevee.nekosleep.collections.ViewModelFactory;
 import xjtlu.eevee.nekosleep.collections.persistence.Pet;
 import xjtlu.eevee.nekosleep.collections.persistence.PetBookDatabase;
 import xjtlu.eevee.nekosleep.collections.persistence.PetDao;
@@ -48,7 +44,7 @@ public class PetScreenSlideActivity extends AppCompatActivity {
     ViewPager page_one;
     ArrayList<View> pageList;
     LinearLayout pageIndicator;
-    PetViewPagerAdapter pageAdapter;
+    ViewPagerAdapter pageAdapter;
 
     List<Pet> petList;
 
@@ -83,7 +79,7 @@ public class PetScreenSlideActivity extends AppCompatActivity {
             pageList.add(getPetsPage(i));
         }
 
-        pageAdapter = new PetViewPagerAdapter(pageList);
+        pageAdapter = new ViewPagerAdapter(pageList);
         page_one.setAdapter(pageAdapter);
 
         // Scroll Listener
@@ -120,7 +116,6 @@ public class PetScreenSlideActivity extends AppCompatActivity {
         }
         //mViewModelFactory = Injection.provideViewModelFactory(this);
         //mViewModel = new ViewModelProvider(this, mViewModelFactory).get(PetViewModel.class);
-
     }
 
     private void clearIndicatorFocusedState() {
@@ -146,44 +141,27 @@ public class PetScreenSlideActivity extends AppCompatActivity {
                 petId = "00000"+index;
             }
             CardView cv = (CardView)gl_pets.getChildAt(i);
-
             String finalPetId = petId;
-            cv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(PetScreenSlideActivity.this, ChooseItemActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("petId", finalPetId);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-                }
-            });
-            final TextView tv_pet;
-            switch (i) {
-                case 0:
-                    tv_pet = gl_pets.findViewById(R.id.pb_name0);
-                break;
-                case 1:
-                    tv_pet = gl_pets.findViewById(R.id.pb_name1);
-                    break;
-                case 2:
-                    tv_pet = gl_pets.findViewById(R.id.pb_name2);
-                    break;
-                case 3:
-                    tv_pet = gl_pets.findViewById(R.id.pb_name3);
-                    break;
-                    default:
-                        tv_pet = gl_pets.findViewById(R.id.pb_name0);
-            }
+            TextView tv_pet = (TextView) cv.getChildAt(0);
             disposable.add(petDao.getPetById(petId)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(pet -> {
                                 Drawable pet_img = getResources().getDrawable(R.drawable.default_cat);
-                                //if(pet.isActive()) {
+                                if(pet.isActive()) {
                                     pet_img = AssetReader.getDrawableFromAssets(
                                             appContext, "petbook_img/" + pet.getImageName() + ".png");
-                                //}
+                                    cv.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Intent intent = new Intent(PetScreenSlideActivity.this, ChooseItemActivity.class);
+                                            Bundle bundle = new Bundle();
+                                            bundle.putString("petId", finalPetId);
+                                            intent.putExtras(bundle);
+                                            startActivity(intent);
+                                        }
+                                    });
+                                }
                                 pet_img.setBounds(0,0,pet_img.getMinimumWidth(),pet_img.getMinimumHeight());
                                 tv_pet.setCompoundDrawablesWithIntrinsicBounds(null, pet_img, null, null);
                                 tv_pet.setText(pet.getPetName());

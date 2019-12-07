@@ -18,7 +18,7 @@
         <activity android:name=".collections.ui.PetScreenSlideActivity"></activity>
         <activity android:name=".collections.ui.ChooseItemActivity" />
         <activity android:name=".result.SleepResultActivity"/>
-        <activity android:name=".share.ShareActivity"/>
+        <activity android:name=".collections.ui.ItemScreenSlideActivity"/>
         <activity android:name=".Pet.MainActivity" />
         <activity android:name=".settings.AboutUsActivity"></activity>
         <activity android:name=".settings.UserSettingsActivity"></activity>
