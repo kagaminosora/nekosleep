@@ -93,9 +93,14 @@ public class UserSettingsActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
                     if (alarmTime.length() > 1 && !alarmFlag) { // have saved alarmTime but no current alarm
+
                         String[] times = alarmTime.split(":");
                         alarmManagerUtils.getUpAlarmManagerStartWork(getApplicationContext(), 0, Integer.parseInt(times[0]), Integer.parseInt
                                 (times[1]), 0, 0, "Time to get up!", mSharedPreferences1.getInt("RING", 0));
+
+                        SharedPreferences.Editor edit = mSharedPreferences1.edit();
+                        edit.putBoolean("ALARM_OR_NOT", true);
+                        edit.commit();
                         Toast.makeText(getApplicationContext(), "Set once alarm at " + alarmTime, Toast.LENGTH_LONG).show();
                     } else if (alarmTime.length() == 0 && !alarmFlag) { //first time to use, no saved alarmTime
                         Intent intent = new Intent(UserSettingsActivity.this,
@@ -105,6 +110,7 @@ public class UserSettingsActivity extends AppCompatActivity {
                 } else {
                     if (alarmFlag) {
                         alarmManagerUtils.cancelAlarm(0);
+
                         SharedPreferences.Editor edit = mSharedPreferences1.edit();
                         edit.putBoolean("ALARM_OR_NOT", false);
                         edit.commit();
