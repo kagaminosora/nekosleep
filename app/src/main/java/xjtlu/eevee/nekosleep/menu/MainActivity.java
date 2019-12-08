@@ -9,8 +9,10 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.ui.AppBarConfiguration;
 
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.Manifest;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,18 +29,22 @@ import android.widget.TextClock;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.List;
+
 import xjtlu.eevee.nekosleep.Pet.FloatWindowManagerService;
 import xjtlu.eevee.nekosleep.R;
 import xjtlu.eevee.nekosleep.collections.ui.ChooseItemActivity;
 import xjtlu.eevee.nekosleep.collections.ui.ItemScreenSlideActivity;
 import xjtlu.eevee.nekosleep.collections.ui.PetScreenSlideActivity;
 import xjtlu.eevee.nekosleep.home.DigitalClock;
+import xjtlu.eevee.nekosleep.home.ServiceNotification;
 import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     Button sleeporwake;
     boolean isChanged = false;
+    Intent serviceForegroundIntent;
 
 //    Button btPetBook;
 //    Button btSettings;
@@ -46,6 +52,49 @@ public class MainActivity extends AppCompatActivity {
 //    Button btResult;
 //
     int OVERLAY_PERMISSION_REQ_CODE = 0;
+
+    String m_sMonitorAppName = "xjtlu.eevee.nekosleep";
+    class MonitorThread implements Runnable {
+        public void run() {
+            while (true) {
+                ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+                List<ActivityManager.RunningAppProcessInfo> runningTasks = manager.getRunningAppProcesses();
+
+                // 获得当前最顶端的任务栈，即前台任务栈
+                ActivityManager.RunningAppProcessInfo runningTaskInfo = runningTasks.get(0);
+                String packageName = runningTaskInfo.processName.toString();
+
+                if (!packageName.equals(m_sMonitorAppName)) {
+
+                    PackageManager packageManager = getPackageManager();
+                    PackageInfo packageInfo = null;
+                    //在这里，该App虽然没在前台运行，也有可能在后台运行（未被结束），
+                    //为了更合理，应该先结束掉，但是注释的方法总是崩溃..........
+                    //android.os.Process.killProcess(runningTaskInfo.pid); //结束进程
+
+                    try {
+                        packageInfo = getPackageManager().getPackageInfo(packageName, 0);
+                    } catch (PackageManager.NameNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (packageInfo != null) {
+                        Intent intent = packageManager.getLaunchIntentForPackage(m_sMonitorAppName);
+                        startActivity(intent);//启动App
+                    }
+
+                }
+
+                try {
+                    Thread.sleep(3000); //延时3s
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +180,39 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        MonitorThread startThread = new MonitorThread();
+        new Thread(startThread).start();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        serviceForegroundIntent = new Intent(this, ServiceNotification.class);
+        serviceForegroundIntent.putExtra(ServiceNotification.EXTRA_NOTIFICATION_CONTENT, "running");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceForegroundIntent);
+        } else {
+            startService(serviceForegroundIntent);
+        }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if (serviceForegroundIntent != null) {
+            stopService(serviceForegroundIntent);
+            serviceForegroundIntent = null;
+        }
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        if (serviceForegroundIntent != null) {
+            stopService(serviceForegroundIntent);
+            serviceForegroundIntent = null;
+        }
     }
 
 //    @Override
