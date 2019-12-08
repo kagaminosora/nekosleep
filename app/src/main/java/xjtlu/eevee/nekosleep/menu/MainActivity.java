@@ -20,6 +20,9 @@ import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextClock;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -29,10 +32,13 @@ import xjtlu.eevee.nekosleep.R;
 import xjtlu.eevee.nekosleep.collections.ui.ChooseItemActivity;
 import xjtlu.eevee.nekosleep.collections.ui.ItemScreenSlideActivity;
 import xjtlu.eevee.nekosleep.collections.ui.PetScreenSlideActivity;
+import xjtlu.eevee.nekosleep.home.DigitalClock;
 import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
+    Button sleeporwake;
+    boolean isChanged = false;
 
 //    Button btPetBook;
 //    Button btSettings;
@@ -45,6 +51,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ImageView petView = (ImageView)findViewById(R.id.home_pet);
+        sleeporwake = (Button)findViewById(R.id.sleeporwake);
+        sleeporwake.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if(isChanged) {
+                    petView.setImageDrawable(getResources().getDrawable(R.drawable.default_cat));
+                    sleeporwake.setText(R.string.home_wake);
+                }
+                else{
+                    petView.setImageDrawable(getResources().getDrawable(R.drawable.fou_riyo));
+                    sleeporwake.setText(R.string.home_sleep);
+                }
+                isChanged = !isChanged;
+            }
+
+        });
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -59,11 +83,26 @@ public class MainActivity extends AppCompatActivity {
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, 0, 0);
-        mDrawerToggle.syncState();
         setSupportActionBar(toolbar);
-
-        drawer.addDrawerListener(mDrawerToggle);
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this,drawer,toolbar,0,0)
+//        {
+//            @Override
+//            public void onDrawerClosed(View drawerView) {
+//                super.onDrawerClosed(drawerView);
+//                getActionBar().setTitle("Nekosleep");
+//                invalidateOptionsMenu(); // creates call to
+//                // onPrepareOptionsMenu()
+//            }
+//            @Override
+//            public void onDrawerOpened(View drawerView) {
+//                super.onDrawerOpened(drawerView);
+//                getActionBar().setTitle("Menu");
+//                invalidateOptionsMenu(); // creates call to
+//                // onPrepareOptionsMenu()
+//            }
+//        }
+        ;
+        drawer.addDrawerListener(actionBarDrawerToggle);
         NavigationView navigationView = findViewById(R.id.nav_view);
 //        navigationView.setItemIconTintList(null);
         navigationView.inflateHeaderView(R.layout.nav_header_main);
@@ -93,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 //    @Override
 //    protected void onCreate(Bundle savedInstanceState) {
 //        super.onCreate(savedInstanceState);
