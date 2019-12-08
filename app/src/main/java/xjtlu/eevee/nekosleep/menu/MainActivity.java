@@ -10,8 +10,10 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.ui.AppBarConfiguration;
 
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.Manifest;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,19 +24,36 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextClock;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import xjtlu.eevee.nekosleep.Pet.FloatWindowManagerService;
 import xjtlu.eevee.nekosleep.R;
 import xjtlu.eevee.nekosleep.collections.ui.ChooseItemActivity;
 import xjtlu.eevee.nekosleep.collections.ui.ItemScreenSlideActivity;
 import xjtlu.eevee.nekosleep.collections.ui.PetScreenSlideActivity;
+import xjtlu.eevee.nekosleep.home.DigitalClock;
+import xjtlu.eevee.nekosleep.home.ServiceNotification;
 import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
+    Button sleeporwake;
+    boolean isChanged = false;
+    Intent serviceForegroundIntent;
+    private ProgressBar pb;
+    private int progress=0;
+    private Timer timer;
+    private TimerTask timerTask;
 
 //    Button btPetBook;
 //    Button btSettings;
@@ -43,10 +62,70 @@ public class MainActivity extends AppCompatActivity {
 //
     int OVERLAY_PERMISSION_REQ_CODE = 0;
 
+//    String m_sMonitorAppName = "xjtlu.eevee.nekosleep";
+//    class MonitorThread implements Runnable {
+//        public void run() {
+//            while (true) {
+//                ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+//                List<ActivityManager.RunningAppProcessInfo> runningTasks = manager.getRunningAppProcesses();
+//
+//                // 获得当前最顶端的任务栈，即前台任务栈
+//                ActivityManager.RunningAppProcessInfo runningTaskInfo = runningTasks.get(0);
+//                String packageName = runningTaskInfo.processName.toString();
+//
+//                if (!packageName.equals(m_sMonitorAppName)) {
+//
+//                    PackageManager packageManager = getPackageManager();
+//                    PackageInfo packageInfo = null;
+//                    //在这里，该App虽然没在前台运行，也有可能在后台运行（未被结束），
+//                    //为了更合理，应该先结束掉，但是注释的方法总是崩溃..........
+//                    //android.os.Process.killProcess(runningTaskInfo.pid); //结束进程
+//
+//                    try {
+//                        packageInfo = getPackageManager().getPackageInfo(packageName, 0);
+//                    } catch (PackageManager.NameNotFoundException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    if (packageInfo != null) {
+//                        Intent intent = packageManager.getLaunchIntentForPackage(m_sMonitorAppName);
+//                        startActivity(intent);//启动App
+//                    }
+//
+//                }
+//
+//                try {
+//                    Thread.sleep(3000); //延时3s
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//
+//        }
+//    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ImageView petView = (ImageView)findViewById(R.id.home_pet);
+        sleeporwake = (Button)findViewById(R.id.sleeporwake);
+        sleeporwake.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if(isChanged) {
+                    petView.setImageDrawable(getResources().getDrawable(R.drawable.default_cat));
+                    sleeporwake.setText(R.string.home_wake);
+                }
+                else{
+                    petView.setImageDrawable(getResources().getDrawable(R.drawable.fou_riyo));
+                    sleeporwake.setText(R.string.home_sleep);
+                }
+                isChanged = !isChanged;
+            }
+
+        });
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("click");
                 if (drawer.isDrawerOpen(GravityCompat.START)) {
                     drawer.closeDrawer(GravityCompat.START);
                 } else {
@@ -77,6 +155,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
         drawer.addDrawerListener(mDrawerToggle);
+
+//        {
+//            @Override
+//            public void onDrawerClosed(View drawerView) {
+//                super.onDrawerClosed(drawerView);
+//                getActionBar().setTitle("Nekosleep");
+//                invalidateOptionsMenu(); // creates call to
+//                // onPrepareOptionsMenu()
+//            }
+//            @Override
+//            public void onDrawerOpened(View drawerView) {
+//                super.onDrawerOpened(drawerView);
+//                getActionBar().setTitle("Menu");
+//                invalidateOptionsMenu(); // creates call to
+//                // onPrepareOptionsMenu()
+//            }
+//        }
+        ;
+
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
         navigationView.inflateHeaderView(R.layout.nav_header_main);
@@ -105,7 +202,46 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        pb = (ProgressBar) findViewById(R.id.progressBar);
+        //设置进度条的最大数值
+        pb.setMax(100);
+        //一开始进度条的进度是0
+        pb.setProgress(0);
     }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        serviceForegroundIntent = new Intent(this, ServiceNotification.class);
+        serviceForegroundIntent.putExtra(ServiceNotification.EXTRA_NOTIFICATION_CONTENT, "running");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceForegroundIntent);
+        } else {
+            startService(serviceForegroundIntent);
+        }
+        EndTimer();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if (serviceForegroundIntent != null) {
+            stopService(serviceForegroundIntent);
+            serviceForegroundIntent = null;
+        }
+        StartTimer();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        if (serviceForegroundIntent != null) {
+            stopService(serviceForegroundIntent);
+            serviceForegroundIntent = null;
+        }
+    }
+
 //    @Override
 //    protected void onCreate(Bundle savedInstanceState) {
 //        super.onCreate(savedInstanceState);
@@ -160,6 +296,39 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    public void StartTimer() {
+        //如果timer和timerTask已经被置null了
+        if (timer == null&&timerTask==null) {
+            //新建timer和timerTask
+            timer = new Timer();
+            timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    //每次progress加一
+                    progress++;
+                    //如果进度条满了的话就再置0，实现循环
+                    if (progress == 101) {
+                        progress = 0;
+                    }
+                    //设置进度条进度
+                    pb.setProgress(progress);
+                }
+            };
+            /*开始执行timer,第一个参数是要执行的任务，
+            第二个参数是开始的延迟时间（单位毫秒）或者是Date类型的日期，代表开始执行时的系统时间
+            第三个参数是计时器两次计时之间的间隔（单位毫秒）*/
+        }
+        timer.schedule(timerTask, 1000, 1000);
+    }
+
+
+    public void EndTimer() {
+        timer.cancel();
+        timerTask.cancel();
+        timer=null;
+        timerTask=null;
     }
 
     private void requirePermission () {
