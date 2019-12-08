@@ -51,7 +51,7 @@ public class ItemScreenSlideActivity extends AppCompatActivity {
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_items);
+        setContentView(R.layout.view_pager_item_activity);
         init();
     }
 
