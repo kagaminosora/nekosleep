@@ -53,48 +53,48 @@ public class MainActivity extends AppCompatActivity {
 //
     int OVERLAY_PERMISSION_REQ_CODE = 0;
 
-    String m_sMonitorAppName = "xjtlu.eevee.nekosleep";
-    class MonitorThread implements Runnable {
-        public void run() {
-            while (true) {
-                ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-                List<ActivityManager.RunningAppProcessInfo> runningTasks = manager.getRunningAppProcesses();
-
-                // 获得当前最顶端的任务栈，即前台任务栈
-                ActivityManager.RunningAppProcessInfo runningTaskInfo = runningTasks.get(0);
-                String packageName = runningTaskInfo.processName.toString();
-
-                if (!packageName.equals(m_sMonitorAppName)) {
-
-                    PackageManager packageManager = getPackageManager();
-                    PackageInfo packageInfo = null;
-                    //在这里，该App虽然没在前台运行，也有可能在后台运行（未被结束），
-                    //为了更合理，应该先结束掉，但是注释的方法总是崩溃..........
-                    //android.os.Process.killProcess(runningTaskInfo.pid); //结束进程
-
-                    try {
-                        packageInfo = getPackageManager().getPackageInfo(packageName, 0);
-                    } catch (PackageManager.NameNotFoundException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (packageInfo != null) {
-                        Intent intent = packageManager.getLaunchIntentForPackage(m_sMonitorAppName);
-                        startActivity(intent);//启动App
-                    }
-
-                }
-
-                try {
-                    Thread.sleep(3000); //延时3s
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-        }
-    }
+//    String m_sMonitorAppName = "xjtlu.eevee.nekosleep";
+//    class MonitorThread implements Runnable {
+//        public void run() {
+//            while (true) {
+//                ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+//                List<ActivityManager.RunningAppProcessInfo> runningTasks = manager.getRunningAppProcesses();
+//
+//                // 获得当前最顶端的任务栈，即前台任务栈
+//                ActivityManager.RunningAppProcessInfo runningTaskInfo = runningTasks.get(0);
+//                String packageName = runningTaskInfo.processName.toString();
+//
+//                if (!packageName.equals(m_sMonitorAppName)) {
+//
+//                    PackageManager packageManager = getPackageManager();
+//                    PackageInfo packageInfo = null;
+//                    //在这里，该App虽然没在前台运行，也有可能在后台运行（未被结束），
+//                    //为了更合理，应该先结束掉，但是注释的方法总是崩溃..........
+//                    //android.os.Process.killProcess(runningTaskInfo.pid); //结束进程
+//
+//                    try {
+//                        packageInfo = getPackageManager().getPackageInfo(packageName, 0);
+//                    } catch (PackageManager.NameNotFoundException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    if (packageInfo != null) {
+//                        Intent intent = packageManager.getLaunchIntentForPackage(m_sMonitorAppName);
+//                        startActivity(intent);//启动App
+//                    }
+//
+//                }
+//
+//                try {
+//                    Thread.sleep(3000); //延时3s
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//
+//        }
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,9 +180,6 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        MonitorThread startThread = new MonitorThread();
-        new Thread(startThread).start();
     }
 
     @Override
