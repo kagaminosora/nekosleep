@@ -7,7 +7,13 @@
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="@android:dimen/app_icon_size" />
+        android:layout_height="68dp" />
+
+    <ImageView
+        android:id="@+id/home_pet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/fou_riyo" />
 
     <xjtlu.eevee.nekosleep.home.DigitalClock
         android:id="@+id/home_clock"
@@ -19,15 +25,15 @@
         android:textColor="#000000"
         android:textSize="36sp" />
 
-    <ImageView
-        android:id="@+id/home_pet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/fou_riyo" />
-
     <Space
         android:layout_width="match_parent"
         android:layout_height="70dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="34dp" />
 
     <Button
         android:id="@+id/sleeporwake"

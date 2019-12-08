@@ -24,12 +24,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextClock;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import xjtlu.eevee.nekosleep.Pet.FloatWindowManagerService;
 import xjtlu.eevee.nekosleep.R;
@@ -45,6 +48,10 @@ public class MainActivity extends AppCompatActivity {
     Button sleeporwake;
     boolean isChanged = false;
     Intent serviceForegroundIntent;
+    private ProgressBar pb;
+    private int progress=0;
+    private Timer timer;
+    private TimerTask timerTask;
 
 //    Button btPetBook;
 //    Button btSettings;
@@ -100,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         ImageView petView = (ImageView)findViewById(R.id.home_pet);
         sleeporwake = (Button)findViewById(R.id.sleeporwake);
         sleeporwake.setOnClickListener(new View.OnClickListener(){
@@ -180,6 +186,12 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        pb = (ProgressBar) findViewById(R.id.progressBar);
+        //设置进度条的最大数值
+        pb.setMax(100);
+        //一开始进度条的进度是0
+        pb.setProgress(0);
     }
 
     @Override
@@ -192,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             startService(serviceForegroundIntent);
         }
+        EndTimer();
     }
 
     @Override
@@ -201,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
             stopService(serviceForegroundIntent);
             serviceForegroundIntent = null;
         }
+        StartTimer();
     }
 
     @Override
@@ -266,6 +280,39 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    public void StartTimer() {
+        //如果timer和timerTask已经被置null了
+        if (timer == null&&timerTask==null) {
+            //新建timer和timerTask
+            timer = new Timer();
+            timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    //每次progress加一
+                    progress++;
+                    //如果进度条满了的话就再置0，实现循环
+                    if (progress == 101) {
+                        progress = 0;
+                    }
+                    //设置进度条进度
+                    pb.setProgress(progress);
+                }
+            };
+            /*开始执行timer,第一个参数是要执行的任务，
+            第二个参数是开始的延迟时间（单位毫秒）或者是Date类型的日期，代表开始执行时的系统时间
+            第三个参数是计时器两次计时之间的间隔（单位毫秒）*/
+        }
+        timer.schedule(timerTask, 1000, 1000);
+    }
+
+
+    public void EndTimer() {
+        timer.cancel();
+        timerTask.cancel();
+        timer=null;
+        timerTask=null;
     }
 
     private void requirePermission () {
