@@ -7,6 +7,10 @@
     android:background="#FFFFFF"
     android:orientation="vertical">
 
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@android:dimen/app_icon_size" />
+
     <TextView
         android:id="@+id/setting_tittle"
         android:layout_width="match_parent"

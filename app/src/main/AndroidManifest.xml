@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
@@ -15,7 +17,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:persistent="true">
 
         <activity android:name=".collections.ui.PetScreenSlideActivity"></activity>
         <activity android:name=".collections.ui.ChooseItemActivity" />
@@ -39,6 +42,7 @@
         <service
             android:name=".Pet.FloatWindowManagerService"
             android:enabled="true" />
+        <service android:name=".home.ServiceNotification" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
