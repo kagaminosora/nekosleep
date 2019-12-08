@@ -1,6 +1,10 @@
 package xjtlu.eevee.nekosleep.alarm_clock;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import xjtlu.eevee.nekosleep.R;
+import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 
 public class AlarmClockActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView date_tv;
@@ -28,6 +33,7 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
     private String time;
     private int cycle;
     private int ring;
+    private static SharedPreferences mSharedPreferences1 = null;
 
     private AlarmManagerUtils alarmManagerUtils;
 
@@ -49,7 +55,7 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
         pvTime.setTime(new Date());
         pvTime.setCyclic(false);
         pvTime.setCancelable(true);
-        //时间选择后回调
+        //callback after submit
         pvTime.setOnTimeSelectListener(new TimePickerView.OnTimeSelectListener() {
 
             @Override
@@ -95,28 +101,34 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
         alarmManagerUtils.createGetUpAlarmManager();
         if (time != null && time.length() > 0) {
             String[] times = time.split(":");
-            if (cycle == 0) {//是每天的闹钟
+            if (cycle == 0) {//everyday
                 alarmManagerUtils.getUpAlarmManagerStartWork(this, 0, Integer.parseInt(times[0]), Integer.parseInt
-                        (times[1]), 0, 0, "闹钟响了", ring);
-            } if(cycle == -1){//是只响一次的闹钟
-                System.out.println("=========================================================================");
-                System.out.println("=========================================================================");
-                System.out.println("check0");
-                System.out.println("=========================================================================");
+                        (times[1]), 0, 0, "Time to get up!", ring);
+            } if(cycle == -1){//only once
                 alarmManagerUtils.getUpAlarmManagerStartWork(this, 0, Integer.parseInt(times[0]), Integer.parseInt
-                        (times[1]), 0, 0, "闹钟响了", ring);
-            }else {//多选，周几的闹钟
+                        (times[1]), 0, 0, "Time to get up!", ring);
+            }else {//multiple choices
                 String weeksStr = parseRepeat(cycle, 1);
                 String[] weeks = weeksStr.split(",");
                 for (int i = 0; i < weeks.length; i++) {
                     alarmManagerUtils.getUpAlarmManagerStartWork(this, 2, Integer.parseInt(times[0]), Integer
-                            .parseInt(times[1]), i, Integer.parseInt(weeks[i]), "闹钟响了", ring);
+                            .parseInt(times[1]), i, Integer.parseInt(weeks[i]), "Time to get up!", ring);
                 }
             }
-            Toast.makeText(this, "闹钟设置成功", Toast.LENGTH_LONG).show();
+            mSharedPreferences1 = getSharedPreferences("ALARM_PREF", Context.MODE_PRIVATE);
+            SharedPreferences.Editor edit = mSharedPreferences1.edit();
+            edit.putBoolean("ALARM_OR_NOT", true);
+            edit.putString("ALARM_TIME", time);
+            edit.putInt("RING", ring);
+            edit.commit();
+            Toast.makeText(this, "Alarm clock set successfully", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(AlarmClockActivity.this,
+                    UserSettingsActivity.class);
+            startActivity(intent);
+            this.finish();
         }
         //TEST CODE
-        //Toast.makeText(this, "TEST闹钟设置成功", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "TEST", Toast.LENGTH_LONG).show();
     }
 
 
@@ -129,35 +141,35 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void obtainMessage(int flag, String ret) {
                 switch (flag) {
-                    // 星期一
+                    // Monday
                     case 0:
 
                         break;
-                    // 星期二
+                    // Tuesday
                     case 1:
 
                         break;
-                    // 星期三
+                    // Wednesday
                     case 2:
 
                         break;
-                    // 星期四
+                    // Thursday
                     case 3:
 
                         break;
-                    // 星期五
+                    // Friday
                     case 4:
 
                         break;
-                    // 星期六
+                    // Saturday
                     case 5:
 
                         break;
-                    // 星期日
+                    // Sunday
                     case 6:
 
                         break;
-                    // 确定
+                    // submit
                     case 7:
                         int repeat = Integer.valueOf(ret);
                         tv_repeat_value.setText(parseRepeat(repeat, 0));
@@ -165,12 +177,12 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
                         fp.dismiss();
                         break;
                     case 8:
-                        tv_repeat_value.setText("每天");
+                        tv_repeat_value.setText("Everyday");
                         cycle = 0;
                         fp.dismiss();
                         break;
                     case 9:
-                        tv_repeat_value.setText("只响一次");
+                        tv_repeat_value.setText("Once");
                         cycle = -1;
                         fp.dismiss();
                         break;
@@ -191,14 +203,14 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void obtainMessage(int flag) {
                 switch (flag) {
-                    // 震动
+                    //Vibration
                     case 0:
-                        tv_ring_value.setText("震动");
+                        tv_ring_value.setText("Vibration");
                         ring = 0;
                         break;
-                    // 铃声
+                    // Ring
                     case 1:
-                        tv_ring_value.setText("铃声");
+                        tv_ring_value.setText("Ring");
                         ring = 1;
                         break;
                     default:
@@ -220,65 +232,74 @@ public class AlarmClockActivity extends AppCompatActivity implements View.OnClic
             repeat = 127;
         }
         if (repeat % 2 == 1) {
-            cycle = "周一";
+            cycle = "Monday";
             weeks = "1";
         }
         if (repeat % 4 >= 2) {
             if ("".equals(cycle)) {
-                cycle = "周二";
+                cycle = "Tuesday";
                 weeks = "2";
             } else {
-                cycle = cycle + "," + "周二";
+                cycle = cycle + "," + "Tuesday";
                 weeks = weeks + "," + "2";
             }
         }
         if (repeat % 8 >= 4) {
             if ("".equals(cycle)) {
-                cycle = "周三";
+                cycle = "Wednesday";
                 weeks = "3";
             } else {
-                cycle = cycle + "," + "周三";
+                cycle = cycle + "," + "Wednesday";
                 weeks = weeks + "," + "3";
             }
         }
         if (repeat % 16 >= 8) {
             if ("".equals(cycle)) {
-                cycle = "周四";
+                cycle = "Thursday";
                 weeks = "4";
             } else {
-                cycle = cycle + "," + "周四";
+                cycle = cycle + "," + "Thursday";
                 weeks = weeks + "," + "4";
             }
         }
         if (repeat % 32 >= 16) {
             if ("".equals(cycle)) {
-                cycle = "周五";
+                cycle = "Friday";
                 weeks = "5";
             } else {
-                cycle = cycle + "," + "周五";
+                cycle = cycle + "," + "Friday";
                 weeks = weeks + "," + "5";
             }
         }
         if (repeat % 64 >= 32) {
             if ("".equals(cycle)) {
-                cycle = "周六";
+                cycle = "Saturday";
                 weeks = "6";
             } else {
-                cycle = cycle + "," + "周六";
+                cycle = cycle + "," + "Saturday";
                 weeks = weeks + "," + "6";
             }
         }
         if (repeat / 64 == 1) {
             if ("".equals(cycle)) {
-                cycle = "周日";
+                cycle = "Sunday";
                 weeks = "7";
             } else {
-                cycle = cycle + "," + "周日";
+                cycle = cycle + "," + "Sunday";
                 weeks = weeks + "," + "7";
             }
         }
 
         return flag == 0 ? cycle : weeks;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(AlarmClockActivity.this,
+                UserSettingsActivity.class);
+        startActivity(intent);
+        this.finish();
+        super.onBackPressed();
     }
 
 }

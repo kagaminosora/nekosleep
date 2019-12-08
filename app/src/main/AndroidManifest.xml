@@ -32,7 +32,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".alarm_clock.AlarmClockActivity" />
-        <activity android:name=".alarm_clock.TimeSetActivity" />
+
         <service
             android:name=".alarm_clock.AlarmClockService"
             android:enabled="true" />
