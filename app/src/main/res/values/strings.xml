@@ -2,4 +2,63 @@
     <string name="app_name">NekoSleep</string>
     <string name="pager_dot_icon">DotIcon</string>
     <string name="pet_collection">Pets</string>
+    <string name="default_pb_name">Nico</string>
+
+    <string name="default_item">Item</string>
+
+    <string name="share_img">Shared Image</string>
+    <string name="share_text_pet">I got a new pet in NekoSleep!</string>
+    <string name="share_text_item">I got a new item in NekoSleep!</string>
+    <string name="share_QR">QR Code</string>
+    <string name="send_to">Share</string>
+
+    <string name="result_get_pet">Congratulations! You get a new pet!</string>
+    <string name="result_get_item">Congratulations! You get a new item!</string>
+
+    <string name="choose_item">Choose Item</string>
+    <string name="pref_key_alarm_time">Set the alarm time</string>
+    <string name="pref_key_sleep_time">Set the sleep time</string>
+    <string name="sleep_time_start">Start time</string>
+    <string name="set_sleep_time">Sleep time</string>
+    <string name="sleep_duration">Sleep duration</string>
+    <string name="set_wake_up_time">Wake up time</string>
+    <string name="set_time">Set time</string>
+    <string name="set_repeat">Repeat</string>
+    <string name="set_ring">Ring</string>
+    <string name="settings_tittle">  Settings</string>
+    <string name="about_us">About us</string>
+    <string name="button_confirm">Confirm</string>
+    <string name="once">Once</string>
+    <string name="everyday">Everyday</string>
+    <string name="mon">Monday</string>
+    <string name="tue">Tuesday</string>
+    <string name="wed">Wednesday</string>
+    <string name="thu">Thursday</string>
+    <string name="fri">Friday</string>
+    <string name="sat">Sunday</string>
+    <string name="sun">Saturday</string>
+    <string name="pickerview_cancel">Cancel</string>
+    <string name="pickerview_submit">Submit</string>
+    <string name="pickerview_hours">Hour</string>
+    <string name="pickerview_minutes">Min</string>
+    <string name="cycle_sure">Confirm</string>
+    <string name="vibration">Vibration</string>
+    <string name="ring">Ring</string>
+    <string name="team_name">Team Eevee!</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">NekoSleep</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_share">Share</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_pets">Pets</string>
+    <string name="menu_items">Items</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_send">Send</string>
+
+    <string name="home_sleep">Sleep</string>
+    <string name="home_wake">Wake</string>
 </resources>

@@ -2,7 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="xjtlu.eevee.nekosleep">
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -11,18 +16,39 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Pet.MainActivity">
+
+        <activity android:name=".collections.ui.PetScreenSlideActivity"></activity>
+        <activity android:name=".collections.ui.ChooseItemActivity" />
+        <activity android:name=".collections.ui.ItemScreenSlideActivity"/>
+        <activity android:name=".result.SleepResultActivity"/>
+
+        <activity android:name=".settings.AboutUsActivity"></activity>
+        <activity android:name=".settings.UserSettingsActivity"></activity>
+        <activity android:name=".menu.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".home.MainActivity"></activity>
+        <activity android:name=".alarm_clock.AlarmClockActivity" />
+        <activity android:name=".alarm_clock.TimeSetActivity" />
+        <service
+            android:name=".alarm_clock.AlarmClockService"
+            android:enabled="true" />
         <service
             android:name=".Pet.FloatWindowManagerService"
-            android:enabled="true"></service>
+            android:enabled="true" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="xjtlu.eevee.nekosleep.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
 
     </application>
-
 </manifest>

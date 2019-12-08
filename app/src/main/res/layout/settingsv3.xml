@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/all_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@android:dimen/app_icon_size" />
+
+    <TextView
+        android:id="@+id/setting_tittle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_tittle"
+        android:textSize="25sp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/line_and_outline_grey" />
+
+
+    <RelativeLayout
+        android:id="@+id/set_alarm3"
+        style="@style/item_style">
+
+        <TextView
+            android:id="@+id/tv_set_alarm3"
+            style="@style/item_text_style"
+            android:layout_alignParentLeft="true"
+            android:text="@string/pref_key_alarm_time" />
+
+        <TextView
+            android:id="@+id/arrow1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/personal_item_arrow" />
+
+        <TextView
+            android:id="@+id/tv_repeat_alarm_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@id/arrow1"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/line_and_outline_grey" />
+
+    <RelativeLayout
+        android:id="@+id/set_sleep_time3"
+        style="@style/item_style">
+
+        <TextView
+            android:id="@+id/tv_set_sleep_time3"
+            style="@style/item_text_style"
+            android:layout_alignParentLeft="true"
+            android:text="@string/pref_key_sleep_time" />
+
+        <TextView
+            android:id="@+id/arrow2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/personal_item_arrow" />
+
+        <TextView
+            android:id="@+id/tv_repeat_sleep_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@id/arrow2"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/line_and_outline_grey" />
+
+    <RelativeLayout
+        android:id="@+id/about_us3"
+        style="@style/item_style">
+
+        <TextView
+            android:id="@+id/tv_about_us3"
+            style="@style/item_text_style"
+            android:layout_alignParentLeft="true"
+            android:text="@string/about_us" />
+
+        <TextView
+            android:id="@+id/arrow3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/personal_item_arrow" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/line_and_outline_grey" />
+
+</LinearLayout>
