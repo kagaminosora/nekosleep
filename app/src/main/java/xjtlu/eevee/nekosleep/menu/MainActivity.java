@@ -36,6 +36,7 @@ import android.widget.TextClock;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -55,7 +56,7 @@ import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     Button sleeporwake;
-    boolean isChanged = false;
+    boolean isChanged = true;
     Intent serviceForegroundIntent;
     ImageView petView;
     ImageView itemView;
@@ -68,60 +69,20 @@ public class MainActivity extends AppCompatActivity {
 
     int OVERLAY_PERMISSION_REQ_CODE = 0;
     boolean petStarted = false;
+    boolean sleep_result = false;
+    boolean wake_result = false;
     static Intent petIntent;
-
-//    Button btPetBook;
-//    Button btSettings;
-//    Button btFloatWindow;
-//    Button btResult;
-
-//    String m_sMonitorAppName = "xjtlu.eevee.nekosleep";
-//    class MonitorThread implements Runnable {
-//        public void run() {
-//            while (true) {
-//                ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-//                List<ActivityManager.RunningAppProcessInfo> runningTasks = manager.getRunningAppProcesses();
-//
-//                // 获得当前最顶端的任务栈，即前台任务栈
-//                ActivityManager.RunningAppProcessInfo runningTaskInfo = runningTasks.get(0);
-//                String packageName = runningTaskInfo.processName.toString();
-//
-//                if (!packageName.equals(m_sMonitorAppName)) {
-//
-//                    PackageManager packageManager = getPackageManager();
-//                    PackageInfo packageInfo = null;
-//                    //在这里，该App虽然没在前台运行，也有可能在后台运行（未被结束），
-//                    //为了更合理，应该先结束掉，但是注释的方法总是崩溃..........
-//                    //android.os.Process.killProcess(runningTaskInfo.pid); //结束进程
-//
-//                    try {
-//                        packageInfo = getPackageManager().getPackageInfo(packageName, 0);
-//                    } catch (PackageManager.NameNotFoundException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    if (packageInfo != null) {
-//                        Intent intent = packageManager.getLaunchIntentForPackage(m_sMonitorAppName);
-//                        startActivity(intent);//启动App
-//                    }
-//
-//                }
-//
-//                try {
-//                    Thread.sleep(3000); //延时3s
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//
-//        }
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SharedPreferences sp = this.getPreferences(MODE_PRIVATE);
+        long sleep_time = sp.getLong("SLEEP_TIME_LONG",0)/1000;
+        long wake_time = sp.getLong("WAKE_TIME_LONG",0)/1000;
+        long sleep_last = wake_time - sleep_time;
+        long period = sleep_last*60;
+        System.out.println(period);
         petView = findViewById(R.id.home_pet);
         itemView = findViewById(R.id.home_item);
         initPetView();
@@ -139,12 +100,26 @@ public class MainActivity extends AppCompatActivity {
         sleeporwake.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                Date date = new Date(System.currentTimeMillis());
+                long time_current = date.getTime()/1000;
                 if(isChanged) {
                     petView.setImageDrawable(null);
                     sleeporwake.setText(R.string.home_wake);
+                    StartTimer(period);
+                    if (Math.abs(time_current-sleep_time)<=3600){
+                        sleep_result = true;
+                    }
                 }
                 else{
                     sleeporwake.setText(R.string.home_sleep);
+                    if (Math.abs(time_current-wake_time)<=3600){
+                        wake_result = true;
+                    }
+                    if (wake_result&&sleep_result){
+                        System.out.println("success");
+                    }else{
+                        System.out.println("fail");
+                    }
                     sleepResult();
                 }
                 isChanged = !isChanged;
@@ -168,25 +143,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         drawer.addDrawerListener(mDrawerToggle);
-
-//        {
-//            @Override
-//            public void onDrawerClosed(View drawerView) {
-//                super.onDrawerClosed(drawerView);
-//                getActionBar().setTitle("Nekosleep");
-//                invalidateOptionsMenu(); // creates call to
-//                // onPrepareOptionsMenu()
-//            }
-//            @Override
-//            public void onDrawerOpened(View drawerView) {
-//                super.onDrawerOpened(drawerView);
-//                getActionBar().setTitle("Menu");
-//                invalidateOptionsMenu(); // creates call to
-//                // onPrepareOptionsMenu()
-//            }
-//        }
-        ;
-
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
         navigationView.inflateHeaderView(R.layout.nav_header_main);
@@ -218,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
 
         pb = (ProgressBar) findViewById(R.id.progressBar);
         //设置进度条的最大数值
-        pb.setMax(100);
+        pb.setMax(600);
         //一开始进度条的进度是0
         pb.setProgress(0);
 
@@ -284,11 +240,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
+        SharedPreferences sp = this.getPreferences(MODE_PRIVATE);
+        long sleep_time = sp.getLong("SLEEP_TIME_LONG",0)/1000;
+        long wake_time = sp.getLong("WAKE_TIME_LONG",0)/1000;
+        long sleep_last = wake_time - sleep_time;
+        long period = sleep_last*60;
         if (serviceForegroundIntent != null) {
             stopService(serviceForegroundIntent);
             serviceForegroundIntent = null;
         }
-        StartTimer();
+        StartTimer(period);
     }
 
     @Override
@@ -307,7 +268,8 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void StartTimer() {
+    public void StartTimer(long period) {
+        Date time_current = new Date(System.currentTimeMillis());
         //如果timer和timerTask已经被置null了
         if (timer == null&&timerTask==null) {
             //新建timer和timerTask
@@ -317,19 +279,21 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
                     //每次progress加一
                     progress++;
-                    //如果进度条满了的话就再置0，实现循环
-                    if (progress == 101) {
-                        progress = 0;
+                    //如果进度条满了的话
+                    if (progress == 601) {
+                        progress = 600;
                     }
                     //设置进度条进度
                     pb.setProgress(progress);
                 }
             };
+            if (period>0) {
+                timer.schedule(timerTask, time_current, period);
+            }
             /*开始执行timer,第一个参数是要执行的任务，
             第二个参数是开始的延迟时间（单位毫秒）或者是Date类型的日期，代表开始执行时的系统时间
             第三个参数是计时器两次计时之间的间隔（单位毫秒）*/
         }
-        timer.schedule(timerTask, 1000, 1000);
     }
 
 

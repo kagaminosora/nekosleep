@@ -59,8 +59,8 @@ public class UserSettingsActivity extends AppCompatActivity {
                     startActivity(it2);
                     return true;
                 case R.id.nav_settings:
-                    Intent it3 = new Intent(UserSettingsActivity.this, UserSettingsActivity.class);
-                    startActivity(it3);
+//                    Intent it3 = new Intent(UserSettingsActivity.this, UserSettingsActivity.class);
+//                    startActivity(it3);
                     return true;
             }
             return false;
@@ -143,6 +143,7 @@ public class UserSettingsActivity extends AppCompatActivity {
                 sleepTimeRepeat.setText(sleepTime);
                 SharedPreferences.Editor edit = mSharedPreferences.edit();
                 edit.putString("SLEEP_TIME", sleepTime);
+                edit.putLong("SLEEP_TIME_LONG",date.getTime());
                 edit.commit();
             }
         });
@@ -169,8 +170,8 @@ public class UserSettingsActivity extends AppCompatActivity {
                 wakeTimeRepeat.setText(wakeTime);
                 SharedPreferences.Editor edit = mSharedPreferences.edit();
                 edit.putString("WAKE_TIME", wakeTime);
+                edit.putLong("WAKE_TIME_LONG",date.getTime());
                 edit.commit();
-
             }
         });
         setWakeTime.setOnClickListener(new View.OnClickListener() {
