@@ -1,17 +1,12 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="600dp"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gl_items"
     android:layout_width="match_parent"
-    android:id="@+id/fragment_pets"
-    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:columnCount="3"
+    android:rowCount="4"
+    android:layout_gravity="center"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <GridLayout
-        android:id="@+id/gl_items"
-        android:layout_width="match_parent"
-        android:layout_height="600dp"
-        android:columnCount="3"
-        android:rowCount="4">
-
         <androidx.cardview.widget.CardView
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -193,6 +188,4 @@
 
         </androidx.cardview.widget.CardView>
 
-    </GridLayout>
-
-</LinearLayout>
+</GridLayout>

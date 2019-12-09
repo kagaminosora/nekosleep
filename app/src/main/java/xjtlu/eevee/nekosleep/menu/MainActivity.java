@@ -1,6 +1,7 @@
 package xjtlu.eevee.nekosleep.menu;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -13,8 +14,10 @@ import androidx.navigation.ui.AppBarConfiguration;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -26,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextClock;
 
@@ -38,11 +42,14 @@ import java.util.TimerTask;
 
 import xjtlu.eevee.nekosleep.Pet.FloatWindowManagerService;
 import xjtlu.eevee.nekosleep.R;
+import xjtlu.eevee.nekosleep.collections.AssetReader;
 import xjtlu.eevee.nekosleep.collections.ui.ChooseItemActivity;
 import xjtlu.eevee.nekosleep.collections.ui.ItemScreenSlideActivity;
 import xjtlu.eevee.nekosleep.collections.ui.PetScreenSlideActivity;
 import xjtlu.eevee.nekosleep.home.DigitalClock;
 import xjtlu.eevee.nekosleep.home.ServiceNotification;
+import xjtlu.eevee.nekosleep.home.TestActivity;
+import xjtlu.eevee.nekosleep.result.SleepResultActivity;
 import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -50,17 +57,23 @@ public class MainActivity extends AppCompatActivity {
     Button sleeporwake;
     boolean isChanged = false;
     Intent serviceForegroundIntent;
+    ImageView petView;
+    ImageView itemView;
+    LinearLayout petLL;
+
     private ProgressBar pb;
     private int progress=0;
     private Timer timer;
     private TimerTask timerTask;
 
+    int OVERLAY_PERMISSION_REQ_CODE = 0;
+    boolean petStarted = false;
+    static Intent petIntent;
+
 //    Button btPetBook;
 //    Button btSettings;
 //    Button btFloatWindow;
 //    Button btResult;
-//
-    int OVERLAY_PERMISSION_REQ_CODE = 0;
 
 //    String m_sMonitorAppName = "xjtlu.eevee.nekosleep";
 //    class MonitorThread implements Runnable {
@@ -109,32 +122,32 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ImageView petView = (ImageView)findViewById(R.id.home_pet);
-        sleeporwake = (Button)findViewById(R.id.sleeporwake);
+        petView = findViewById(R.id.home_pet);
+        itemView = findViewById(R.id.home_item);
+        initPetView();
+
+        petLL = findViewById(R.id.home_pet_item);
+
+        petLL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkAndRequirePermission();
+            }
+        });
+
+        sleeporwake = findViewById(R.id.sleeporwake);
         sleeporwake.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 if(isChanged) {
-                    petView.setImageDrawable(getResources().getDrawable(R.drawable.default_cat));
+                    petView.setImageDrawable(null);
                     sleeporwake.setText(R.string.home_wake);
                 }
                 else{
-                    petView.setImageDrawable(getResources().getDrawable(R.drawable.fou_riyo));
                     sleeporwake.setText(R.string.home_sleep);
+                    sleepResult();
                 }
                 isChanged = !isChanged;
-            }
-
-        });
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                checkAndRequirePermission();
-                //requirePermission();
-                Intent intent = new Intent(MainActivity.this, FloatWindowManagerService.class);
-                startService(intent);
             }
         });
 
@@ -208,6 +221,51 @@ public class MainActivity extends AppCompatActivity {
         pb.setMax(100);
         //一开始进度条的进度是0
         pb.setProgress(0);
+
+    }
+
+    public void sleepResult(){
+        Intent intent = new Intent(MainActivity.this, SleepResultActivity.class);
+        Bundle bundle = new Bundle();
+        SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
+        String type = sp.getString("nextType", "empty");
+        if(type.equals("empty")){
+            bundle.putString("type", "pet");
+            bundle.putString("petId", "00000000");
+        }else if(type.equals("pet")){
+            bundle.putString("type", "pet");
+            bundle.putString("petId", sp.getString("nextItemId", "empty"));
+        }else if(type.equals("item")){
+            bundle.putString("type", "item");
+            bundle.putString("itemId", sp.getString("nextItemId", "empty"));
+        }
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    public static Intent getPetIntent(){
+        return petIntent;
+    }
+
+    public void initPetView(){
+        SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
+        String petId = sp.getString("petId", "empty");
+        String itemId = sp.getString("itemId", "empty");
+        String petImgName = sp.getString("petImgName", "empty");
+        String itemImgName = sp.getString("itemImgName", "empty");
+        setImg(petView, petImgName, "home");
+        setImg(itemView, itemImgName, "itembook");
+    }
+
+    public void setImg(ImageView view, String name, String type){
+        if(name.equals("empty")) {
+            view.setImageDrawable(null);
+        }else {
+            Drawable item_img = AssetReader.getDrawableFromAssets(
+                    getApplicationContext(), type + "_img/" + name + ".png");
+            item_img.setBounds(0, 0, item_img.getIntrinsicWidth(), item_img.getIntrinsicHeight());
+            view.setImageDrawable(item_img);
+        }
     }
 
     @Override
@@ -241,55 +299,6 @@ public class MainActivity extends AppCompatActivity {
             serviceForegroundIntent = null;
         }
     }
-
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//        init();
-//    }
-//
-//    public void init(){
-//        btPetBook = findViewById(R.id.pb_button);
-//        btSettings = findViewById(R.id.setting_button);
-//        btFloatWindow = findViewById(R.id.button);
-//        btResult = findViewById(R.id.result_button);
-//        btPetBook = findViewById(R.id.pb_button);
-//
-//        btPetBook.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(MainActivity.this, PetScreenSlideActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-//
-//        btSettings.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(MainActivity.this, UserSettingsActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-//
-//        btFloatWindow.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view) {
-//                checkAndRequirePermission();
-//                //requirePermission();
-//                Intent intent = new Intent(MainActivity.this, FloatWindowManagerService.class);
-//                startService(intent);
-//            }
-//        });
-//
-//        btResult.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(MainActivity.this, SleepResultActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -331,25 +340,52 @@ public class MainActivity extends AppCompatActivity {
         timerTask=null;
     }
 
-    private void requirePermission () {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SYSTEM_ALERT_WINDOW) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= 23) {//6.0以上
-                try{
-                    Intent  intent=new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-                    startActivityForResult(intent, OVERLAY_PERMISSION_REQ_CODE);
-                }catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
+    public void launchPet () {
+        if (!petStarted) {
+            petView.setImageDrawable(null);
+            itemView.setImageDrawable(null);
+            petIntent = new Intent(getApplicationContext(), FloatWindowManagerService.class);
+            startService(petIntent);
+            petStarted = true;
+            System.out.println("Service started.");
+        } else {
+            initPetView();
+            stopService(petIntent);
+            petStarted = false;
+            System.out.println("Service stopped.");
         }
     }
 
     private void checkAndRequirePermission () {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.SYSTEM_ALERT_WINDOW) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.SYSTEM_ALERT_WINDOW }, 0);
+        if (Build.VERSION.SDK_INT >= 23) {//6.0以上
+            if (Settings.canDrawOverlays(this)) {
+                launchPet();
+            }else {
+                try {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                    startActivityForResult(intent, OVERLAY_PERMISSION_REQ_CODE);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }else {
+            if(ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.SYSTEM_ALERT_WINDOW)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW}, 0);
                 System.out.println("Success?");
+            }else {
+                launchPet();
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == OVERLAY_PERMISSION_REQ_CODE){
+            if(Settings.canDrawOverlays(this)) {
+                launchPet();
             }
         }
     }
@@ -358,7 +394,20 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 0) {
-            System.out.println("Success!");
+            if(ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.SYSTEM_ALERT_WINDOW)
+                    != PackageManager.PERMISSION_GRANTED) {
+                System.out.println("Success!");
+                launchPet();
+            }
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if(!petStarted) {
+            initPetView();
         }
     }
 }
