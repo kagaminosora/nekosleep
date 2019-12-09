@@ -16,8 +16,11 @@
     <string name="result_get_item">Congratulations! You get a new item!</string>
 
     <string name="choose_item">Choose Item</string>
-    <string name="pref_key_alarm_time">Set the alarm time</string>
-    <string name="pref_key_sleep_time">Set the sleep time</string>
+    <string name="alarm_switch">Enable alarm</string>
+    <string name="pref_key_alarm_time">Set alarm</string>
+    <string name="sleep_time_category">Set the sleep duration</string>
+    <string name="pref_key_sleep_time">Sleep time</string>
+    <string name="pref_key_wake_time">Wake up time</string>
     <string name="sleep_time_start">Start time</string>
     <string name="set_sleep_time">Sleep time</string>
     <string name="sleep_duration">Sleep duration</string>

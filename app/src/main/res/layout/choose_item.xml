@@ -44,8 +44,8 @@
             android:src="@drawable/choose_item_arrow"
             android:layout_marginHorizontal="20dp"/>
         <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="4dp"
             >
@@ -54,6 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/default_item"
+                android:layout_gravity="center"
                 android:padding="30dp"/>
         </androidx.cardview.widget.CardView>
     </LinearLayout>
@@ -61,7 +62,8 @@
     <GridLayout
         android:id="@+id/gl_ch_items"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="450dp"
+        android:paddingHorizontal="90dp"
         android:columnCount="3"
         android:rowCount="3">
 

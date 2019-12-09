@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.Manifest;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -17,25 +16,20 @@ import android.os.Bundle;
 
 import android.provider.Settings;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import xjtlu.eevee.nekosleep.Pet.FloatWindowManagerService;
 import xjtlu.eevee.nekosleep.R;
 import xjtlu.eevee.nekosleep.collections.AssetReader;
-import xjtlu.eevee.nekosleep.collections.ui.ChooseItemActivity;
 import xjtlu.eevee.nekosleep.collections.ui.ItemScreenSlideActivity;
 import xjtlu.eevee.nekosleep.collections.ui.PetScreenSlideActivity;
 import xjtlu.eevee.nekosleep.result.SleepResultActivity;
 import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class TestActivity extends AppCompatActivity {
 
     Button btPetBook;
     Button btSettings;
@@ -47,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private final CompositeDisposable disposable = new CompositeDisposable();
 
     int OVERLAY_PERMISSION_REQ_CODE = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         btPetBook.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, PetScreenSlideActivity.class);
+                Intent intent = new Intent(TestActivity.this, PetScreenSlideActivity.class);
                 startActivity(intent);
             }
         });
@@ -74,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         btSettings.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, UserSettingsActivity.class);
+                Intent intent = new Intent(TestActivity.this, UserSettingsActivity.class);
                 startActivity(intent);
             }
         });
@@ -84,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 checkAndRequirePermission();
                 //requirePermission();
-                Intent intent = new Intent(MainActivity.this, FloatWindowManagerService.class);
+                Intent intent = new Intent(TestActivity.this, FloatWindowManagerService.class);
                 startService(intent);
             }
         });
@@ -92,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         btResult.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SleepResultActivity.class);
+                Intent intent = new Intent(TestActivity.this, SleepResultActivity.class);
                 Bundle bundle = new Bundle();
                 SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
                 String type = sp.getString("nextType", "empty");
@@ -114,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         btItems.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, ItemScreenSlideActivity.class);
+                Intent intent = new Intent(TestActivity.this, ItemScreenSlideActivity.class);
                 startActivity(intent);
             }
         });

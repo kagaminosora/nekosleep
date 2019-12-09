@@ -1,38 +1,68 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/home_bg"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <Space
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@android:dimen/app_icon_size" />
-
-    <xjtlu.eevee.nekosleep.home.DigitalClock
-        android:id="@+id/home_clock"
-        android:layout_width="fill_parent"
-        android:layout_height="56dp"
-        android:layout_alignParentBottom="false"
-        android:layout_centerHorizontal="true"
+        android:layout_height="match_parent"
         android:gravity="center_horizontal"
-        android:textColor="#000000"
-        android:textSize="36sp" />
+        android:orientation="vertical">
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
+        <xjtlu.eevee.nekosleep.home.DigitalClock
+            android:id="@+id/home_clock"
+            android:layout_width="fill_parent"
+            android:layout_height="56dp"
+            android:layout_alignParentBottom="false"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_horizontal"
+            android:textColor="#000000"
+            android:textSize="36sp" />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="300dp"/>
+        <LinearLayout
+            android:id="@+id/home_pet_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center_horizontal">
+            <ImageView
+                android:id="@+id/home_pet"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:src="@drawable/default_cat"/>
+            <ImageView
+                android:id="@+id/home_item"
+                android:layout_marginTop="100dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/default_item"
+                />
+        </LinearLayout>
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="34dp" />
 
-    <ImageView
-        android:id="@+id/home_pet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/fou_riyo" />
+        <Button
+            android:id="@+id/sleeporwake"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/home_sleep" />
+    </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="70dp" />
 
-    <Button
-        android:id="@+id/sleeporwake"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/home_sleep" />
+
+
 
 </LinearLayout>

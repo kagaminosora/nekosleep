@@ -133,4 +133,11 @@ public class AlarmManagerUtils {
         }
     }
 
+    public void cancelAlarm(int id){
+        am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmClockService.class);
+        pendingIntent = PendingIntent.getService(context, id, intent, 0);
+        am.cancel(pendingIntent);
+    }
+
 }
