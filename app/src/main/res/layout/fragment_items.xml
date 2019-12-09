@@ -1,10 +1,10 @@
 <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/gl_items"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="600dp"
     android:columnCount="3"
     android:rowCount="4"
-    android:layout_gravity="center"
+    android:paddingHorizontal="90dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
         <androidx.cardview.widget.CardView
@@ -188,4 +188,4 @@
 
         </androidx.cardview.widget.CardView>
 
-</GridLayout>
+    </GridLayout>
