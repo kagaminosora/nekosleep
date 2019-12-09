@@ -145,6 +145,7 @@ public class UserSettingsActivity extends AppCompatActivity {
                 edit.putString("SLEEP_TIME", sleepTime);
                 edit.putLong("SLEEP_TIME_LONG",date.getTime());
                 edit.commit();
+                System.out.println("sleep_time: "+date.getTime());
             }
         });
 
@@ -172,6 +173,7 @@ public class UserSettingsActivity extends AppCompatActivity {
                 edit.putString("WAKE_TIME", wakeTime);
                 edit.putLong("WAKE_TIME_LONG",date.getTime());
                 edit.commit();
+                System.out.println("wake_time: "+date.getTime());
             }
         });
         setWakeTime.setOnClickListener(new View.OnClickListener() {

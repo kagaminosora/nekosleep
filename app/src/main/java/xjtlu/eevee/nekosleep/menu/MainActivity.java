@@ -12,6 +12,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.ui.AppBarConfiguration;
 
 import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.Manifest;
 import android.content.SharedPreferences;
@@ -55,8 +56,10 @@ import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
+    private static SharedPreferences mSharedPreferences = null;
+    private Long sleep_time, wake_time;
     Button sleeporwake;
-    boolean isChanged = true;
+    boolean issleeped = false;
     Intent serviceForegroundIntent;
     ImageView petView;
     ImageView itemView;
@@ -72,16 +75,20 @@ public class MainActivity extends AppCompatActivity {
     boolean sleep_result = false;
     boolean wake_result = false;
     static Intent petIntent;
+    private long diff = 944697600;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SharedPreferences sp = this.getPreferences(MODE_PRIVATE);
-        long sleep_time = sp.getLong("SLEEP_TIME_LONG",0)/1000;
-        long wake_time = sp.getLong("WAKE_TIME_LONG",0)/1000;
+
+        mSharedPreferences = getSharedPreferences("SLEEP_WAKE_TIME", Context.MODE_PRIVATE);
+        sleep_time = (mSharedPreferences.getLong("SLEEP_TIME_LONG",0)/1000 + diff);
+        wake_time = (mSharedPreferences.getLong("WAKE_TIME_LONG",0)/1000 + diff);
+        System.out.println("sleep_time: "+sleep_time.toString());
+        System.out.println("wake_time: "+wake_time.toString());
         long sleep_last = wake_time - sleep_time;
-        long period = sleep_last*60;
+        long period = sleep_last;
         System.out.println(period);
         petView = findViewById(R.id.home_pet);
         itemView = findViewById(R.id.home_item);
@@ -96,13 +103,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        pb = (ProgressBar) findViewById(R.id.progressBar);
+        //设置进度条的最大数值
+        pb.setMax(1000);
+        //一开始进度条的进度是0
+        pb.setProgress(0);
         sleeporwake = findViewById(R.id.sleeporwake);
         sleeporwake.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 Date date = new Date(System.currentTimeMillis());
                 long time_current = date.getTime()/1000;
-                if(isChanged) {
+                System.out.println(time_current);
+                if(!issleeped) {
+                    issleeped = true;
                     petView.setImageDrawable(null);
                     sleeporwake.setText(R.string.home_wake);
                     StartTimer(period);
@@ -111,18 +125,20 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 else{
+                    issleeped = false;
                     sleeporwake.setText(R.string.home_sleep);
+                    EndTimer();
                     if (Math.abs(time_current-wake_time)<=3600){
                         wake_result = true;
                     }
                     if (wake_result&&sleep_result){
-                        System.out.println("success");
+                        System.out.println("success");sleepResult();
                     }else{
                         System.out.println("fail");
                     }
-                    sleepResult();
+                    progress=0;
+                    pb.setProgress(0);
                 }
-                isChanged = !isChanged;
             }
         });
 
@@ -171,12 +187,6 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        pb = (ProgressBar) findViewById(R.id.progressBar);
-        //设置进度条的最大数值
-        pb.setMax(600);
-        //一开始进度条的进度是0
-        pb.setProgress(0);
 
     }
 
@@ -234,7 +244,9 @@ public class MainActivity extends AppCompatActivity {
         } else {
             startService(serviceForegroundIntent);
         }
-        EndTimer();
+        if (issleeped) {
+            EndTimer();
+        }
     }
 
     @Override
@@ -249,7 +261,9 @@ public class MainActivity extends AppCompatActivity {
             stopService(serviceForegroundIntent);
             serviceForegroundIntent = null;
         }
-        StartTimer(period);
+        if (issleeped) {
+            StartTimer(period);
+        }
     }
 
     @Override
@@ -280,19 +294,19 @@ public class MainActivity extends AppCompatActivity {
                     //每次progress加一
                     progress++;
                     //如果进度条满了的话
-                    if (progress == 601) {
-                        progress = 600;
+                    if (progress == 1001) {
+                        progress = 1000;
                     }
                     //设置进度条进度
                     pb.setProgress(progress);
                 }
             };
-            if (period>0) {
-                timer.schedule(timerTask, time_current, period);
-            }
             /*开始执行timer,第一个参数是要执行的任务，
             第二个参数是开始的延迟时间（单位毫秒）或者是Date类型的日期，代表开始执行时的系统时间
             第三个参数是计时器两次计时之间的间隔（单位毫秒）*/
+        }
+        if (period>0) {
+            timer.schedule(timerTask, time_current, period);
         }
     }
 
