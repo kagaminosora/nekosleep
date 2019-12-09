@@ -12,7 +12,7 @@
         android:orientation="vertical">
         <Space
             android:layout_width="match_parent"
-            android:layout_height="68dp" />
+            android:layout_height="200dp" />
         <xjtlu.eevee.nekosleep.home.DigitalClock
             android:id="@+id/home_clock"
             android:layout_width="fill_parent"
@@ -24,10 +24,10 @@
             android:textSize="36sp" />
         <Space
             android:layout_width="match_parent"
-            android:layout_height="280dp"/>
+            android:layout_height="300dp"/>
         <LinearLayout
             android:id="@+id/home_pet_item"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_horizontal"

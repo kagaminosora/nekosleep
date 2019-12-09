@@ -9,13 +9,14 @@
     <GridLayout
         android:id="@+id/gl_pets"
         android:layout_width="match_parent"
-        android:layout_height="512dp"
+        android:layout_height="600dp"
         android:layout_gravity="center"
         android:layout_margin="6dp"
         android:alignmentMode="alignMargins"
         android:columnCount="2"
         android:columnOrderPreserved="false"
-        android:rowCount="2">
+        android:rowCount="2"
+        android:paddingHorizontal="80dp">
 
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
