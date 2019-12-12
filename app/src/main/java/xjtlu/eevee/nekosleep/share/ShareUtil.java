@@ -52,9 +52,9 @@ public class ShareUtil{
         final Uri uri = saveImage(image);
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
-        Log.d("share", uri.toString());
+        //Log.d("share", uri.toString());
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-        Log.d("share", "putExtra");
+        //Log.d("share", "putExtra");
         shareIntent.setType("image/png");
         if (image != null && !image.isRecycled()) {
             image.recycle();

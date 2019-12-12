@@ -18,6 +18,7 @@ import android.Manifest;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -61,9 +63,13 @@ public class MainActivity extends AppCompatActivity {
     Button sleeporwake;
     boolean issleeped = false;
     Intent serviceForegroundIntent;
-    ImageView petView;
-    ImageView itemView;
-    LinearLayout petLL;
+
+    private DrawerLayout homeLayout;
+    private AnimationDrawable backgrouond;
+
+    private ImageView petView;
+    private ImageView itemView;
+    private LinearLayout petLL;
 
     private ProgressBar pb;
     private int progress=0;
@@ -81,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initBackground();
 
         mSharedPreferences = getSharedPreferences("SLEEP_WAKE_TIME", Context.MODE_PRIVATE);
         sleep_time = (mSharedPreferences.getLong("SLEEP_TIME_LONG",0)/1000 + diff);
@@ -209,6 +217,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void initBackground(){
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        homeLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        backgrouond = (AnimationDrawable) homeLayout.getBackground();
+        backgrouond.start();
+    }
+
     public static Intent getPetIntent(){
         return petIntent;
     }
@@ -217,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
         String petId = sp.getString("petId", "empty");
         String itemId = sp.getString("itemId", "empty");
-        String petImgName = sp.getString("petImgName", "empty");
+        String petImgName = sp.getString("petImgName", "snowball");
         String itemImgName = sp.getString("itemImgName", "empty");
         setImg(petView, petImgName, "home");
         setImg(itemView, itemImgName, "itembook");
