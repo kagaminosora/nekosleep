@@ -1,49 +1,39 @@
 package xjtlu.eevee.nekosleep.collections.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
-import androidx.drawerlayout.widget.DrawerLayout;
-
-import com.google.android.material.navigation.NavigationView;
+import androidx.lifecycle.ViewModelProvider;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import xjtlu.eevee.nekosleep.R;
 import xjtlu.eevee.nekosleep.collections.AssetReader;
+import xjtlu.eevee.nekosleep.collections.Injection;
 import xjtlu.eevee.nekosleep.collections.persistence.Item;
-import xjtlu.eevee.nekosleep.collections.persistence.ItemDao;
 import xjtlu.eevee.nekosleep.collections.persistence.Pet;
-import xjtlu.eevee.nekosleep.collections.persistence.PetBookDatabase;
-import xjtlu.eevee.nekosleep.collections.persistence.PetDao;
-import xjtlu.eevee.nekosleep.menu.MainActivity;
-import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 
 public class ChooseItemActivity extends AppCompatActivity {
     private final CompositeDisposable disposable = new CompositeDisposable();
-    static PetDao petDao;
-    static PetBookDatabase dbPet;
-    static ItemDao itemDao;
     private Context appContext;
     private static final String TAG = PetScreenSlideActivity.class.getSimpleName();
     static ImageView previousBgView;
+
+    private ViewModelFactory petViewModelFactory;
+    private PetViewModel petViewModel;
 
     Pet chosenPet;
     Item chosenItem;
@@ -73,23 +63,14 @@ public class ChooseItemActivity extends AppCompatActivity {
         init();
     }
 
-    public void initPetDao(){
-        if(dbPet == null) {
-            dbPet = PetBookDatabase.getInstance(appContext);
-            if(petDao==null){
-                petDao = dbPet.petDAO();
-            }
-            if(itemDao==null){
-                itemDao = dbPet.itemDAO();
-            }
-        }
-            //mViewModelFactory = Injection.provideViewModelFactory(this);
-            //mViewModel = new ViewModelProvider(this, mViewModelFactory).get(PetViewModel.class);        }
+    public void initDatabase(){
+        petViewModelFactory = Injection.provideViewModelFactory(this);
+        petViewModel = new ViewModelProvider(this, petViewModelFactory).get(PetViewModel.class);
     }
 
     public void init(){
         appContext = getApplicationContext();
-        initPetDao();
+        initDatabase();
         initObjects();
         chosenPetImg = findViewById(R.id.img_cip);
         chosenItemImg = findViewById(R.id.img_cii);
@@ -99,7 +80,7 @@ public class ChooseItemActivity extends AppCompatActivity {
     }
 
     public void initObjects(){
-        disposable.add(petDao.getPetById(petId)
+        disposable.add(petViewModel.getPet(petId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pet -> {
@@ -127,7 +108,7 @@ public class ChooseItemActivity extends AppCompatActivity {
         itemGrid = findViewById(R.id.gl_ch_items);
         int itemNum = itemGrid.getChildCount();
 
-        disposable.add(itemDao.getItemByPetId(petId)
+        disposable.add(petViewModel.getPetItems(petId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(itemList -> {
@@ -155,7 +136,6 @@ public class ChooseItemActivity extends AppCompatActivity {
                         }
                         },
                         throwable -> Log.e(TAG, "Unable to load image", throwable)));
-        itemDao.getItemByPetId(petId);
     }
 
     public void initChooseItemTV(){

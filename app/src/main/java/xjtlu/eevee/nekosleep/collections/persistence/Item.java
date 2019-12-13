@@ -46,6 +46,8 @@ public class Item {
 
     public String getOwnerId() { return owner; }
 
+    public void activate(){active = true; }
+
     public boolean isActive() { return active; }
 
 }

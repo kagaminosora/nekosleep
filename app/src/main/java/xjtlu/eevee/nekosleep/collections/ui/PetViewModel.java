@@ -18,9 +18,12 @@ package xjtlu.eevee.nekosleep.collections.ui;
 
 import androidx.lifecycle.ViewModel;
 
+import java.util.List;
+
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import xjtlu.eevee.nekosleep.collections.PetDataSource;
+import xjtlu.eevee.nekosleep.collections.persistence.Item;
 import xjtlu.eevee.nekosleep.collections.persistence.Pet;
 
 /**
@@ -32,6 +35,12 @@ public class PetViewModel extends ViewModel {
 
     private Pet mPet;
 
+    private List<Item> petItems;
+
+    private List<Pet> mPets;
+
+    private List<Item> mItems;
+
     public PetViewModel(PetDataSource dataSource) {
         mDataSource = dataSource;
     }
@@ -41,25 +50,68 @@ public class PetViewModel extends ViewModel {
      *
      * @return a {@link Flowable} that will emit every time the user name has been updated.
      */
-    public Flowable<String> getPetName(String id) {
+    public Flowable<Pet> getPet(String id) {
         return mDataSource.getPet(id)
                 // for every emission of the user, get the user name
                 .map(pet -> {
                     mPet = pet;
-                    return pet.getPetName();
+                    return pet;
                 });
     }
 
+    public Flowable<List<Item>> getPetItems(String petId) {
+        return mDataSource.getPetItems(petId).map(
+                items -> {
+                    petItems = items;
+                    return items;
+                }
+        );
+    }
+
+    public Flowable<List<Pet>> getAllPets(){
+        return mDataSource.getAllPets().map(
+                pets -> {
+                    mPets = pets;
+                    return pets;
+                }
+        );
+    }
+
+    public Flowable<List<Item>> getAllItems(){
+        return mDataSource.getAllItems().map(
+                items -> {
+                    mItems = items;
+                    return items;
+                }
+        );
+    }
+
     /**
-     * Update the user name.
+     * Update activeness of the pet.
      *
-     * @param petId the new user name
+     * @param petId the pet id
      * @return a {@link Completable} that completes when the user name is updated
      */
-    public void updateUserName(String petId) {
-        // if there's no user, create a new user.
-        // if we already have a user, then, since the user object is immutable,
-        // create a new user, with the id of the previous user and the updated user name.
+    public void updatePetActiveness(String petId) {
+        if(mPets==null) getAllPets();
+        for(Pet pet: mPets){
+            if(pet.getId()==petId) pet.activate();
+        }
+        mDataSource.updatePetActive(petId);
+    }
+
+    /**
+     * Update activeness of the item.
+     *
+     * @param petId the pet id
+     * @return a {@link Completable} that completes when the user name is updated
+     */
+    public void updateItemActiveness(String petId) {
+
+        if(mPets==null) getAllItems();
+        for(Item item: mItems){
+            if(item.getId()==petId) item.activate();
+        }
         mDataSource.updatePetActive(petId);
     }
 }

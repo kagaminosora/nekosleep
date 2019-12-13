@@ -39,6 +39,8 @@ public class Pet {
 
     public String getImageName() { return imageName; }
 
+    public void activate(){active = true;}
+
     public boolean isActive() { return active; }
 
 }

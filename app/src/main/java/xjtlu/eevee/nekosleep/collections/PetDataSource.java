@@ -16,8 +16,11 @@
 
 package xjtlu.eevee.nekosleep.collections;
 
+import java.util.List;
+
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import xjtlu.eevee.nekosleep.collections.persistence.Item;
 import xjtlu.eevee.nekosleep.collections.persistence.Pet;
 
 /**
@@ -26,17 +29,27 @@ import xjtlu.eevee.nekosleep.collections.persistence.Pet;
 public interface PetDataSource {
 
     /**
-     * Gets the user from the data source.
+     * Gets the pet from the data source.
      *
-     * @return the user from the data source.
+     * @return the pet from the data source.
      */
     Flowable<Pet> getPet(String id);
 
     /**
-     * Inserts the user into the data source, or, if this is an existing user, updates it.
+     * Gets the pets from the data source.
      *
-     * @param petId the user to be inserted or updated.
+     * @return all pets from the data source.
+     */
+    Flowable<List<Pet>> getAllPets();
+
+    /**
+     * Update the pet's condition
+     *
+     * @param petId the pet to be inserted or updated.
      */
     void updatePetActive(String petId);
 
+    Flowable<List<Item>> getPetItems(String petId);
+
+    Flowable<List<Item>> getAllItems();
 }
