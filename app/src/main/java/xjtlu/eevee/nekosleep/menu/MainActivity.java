@@ -262,6 +262,9 @@ public class MainActivity extends AppCompatActivity {
         if (issleeped) {
             EndTimer();
         }
+//        Intent intent = getIntent();
+//        finish();
+//        startActivity(intent);
     }
 
     @Override
