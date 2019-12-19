@@ -36,6 +36,13 @@ public interface PetDataSource {
     Flowable<Pet> getPet(String id);
 
     /**
+     * Gets the item from the data source.
+     *
+     * @return the item from the data source.
+     */
+    Flowable<Item> getItem(String id);
+
+    /**
      * Gets the pets from the data source.
      *
      * @return all pets from the data source.
@@ -48,6 +55,8 @@ public interface PetDataSource {
      * @param petId the pet to be inserted or updated.
      */
     void updatePetActive(String petId);
+
+    void updateItemActive(String itemId);
 
     Flowable<List<Item>> getPetItems(String petId);
 

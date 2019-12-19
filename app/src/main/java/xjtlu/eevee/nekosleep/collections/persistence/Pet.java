@@ -1,6 +1,7 @@
 package xjtlu.eevee.nekosleep.collections.persistence;
 
 import android.graphics.Bitmap;
+import android.provider.Settings;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
@@ -16,31 +17,50 @@ public class Pet {
     @NonNull
     @PrimaryKey
     @ColumnInfo(name = "pet_id")
-    public String petId;
+    private String id;
 
     @NonNull
     @ColumnInfo(name = "img_name")
-    public String imageName;
+    private String imgName;
 
     @NonNull
     @ColumnInfo(name = "name")
-    public String name;
+    private String name;
 
     @NonNull
     @ColumnInfo(name = "active")
-    public boolean active;
-
+    private boolean active;
 
     @Ignore
 
-    public String getId(){ return petId; }
+    public Pet(){
+        this.id = "00000000";
+        this.imgName = "pikachu";
+        this.name = "Pikachu";
+        this.active = true;
+    }
 
-    public String getPetName() { return name; }
+    public Pet(String id, String imgName, String name, Boolean active){
+        this.id = id;
+        this.imgName = imgName;
+        this.name = name;
+        this.active = active;
+    }
 
-    public String getImageName() { return imageName; }
+    public String getId(){ return id; }
 
-    public void activate(){active = true;}
+    public void setId(String id){this.id = id;}
+
+    public String getName() { return name; }
+
+    public void setName(String name){this.name = name;}
+
+    public String getImgName() { return imgName; }
+
+    public void setImgName(String imgName){this.imgName = imgName;}
 
     public boolean isActive() { return active; }
+
+    public void setActive(boolean active){this.active = active;}
 
 }

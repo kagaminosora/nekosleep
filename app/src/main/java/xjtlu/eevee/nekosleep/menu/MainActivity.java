@@ -15,19 +15,24 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.Manifest;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 
 import android.provider.Settings;
 
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -35,10 +40,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextClock;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -50,6 +57,7 @@ import xjtlu.eevee.nekosleep.collections.AssetReader;
 import xjtlu.eevee.nekosleep.collections.ui.ChooseItemActivity;
 import xjtlu.eevee.nekosleep.collections.ui.ItemScreenSlideActivity;
 import xjtlu.eevee.nekosleep.collections.ui.PetScreenSlideActivity;
+import xjtlu.eevee.nekosleep.home.DetectService;
 import xjtlu.eevee.nekosleep.home.DigitalClock;
 import xjtlu.eevee.nekosleep.home.ServiceNotification;
 import xjtlu.eevee.nekosleep.home.TestActivity;
@@ -59,7 +67,7 @@ import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     private static SharedPreferences mSharedPreferences = null;
-    private Long sleep_time, wake_time;
+    private String sleep_time, wake_time;
     Button sleeporwake;
     boolean issleeped = false;
     Intent serviceForegroundIntent;
@@ -67,9 +75,12 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout homeLayout;
     private AnimationDrawable backgrouond;
 
+    private ImageView hamburger;
+    private ImageView fastResult;
+
     private ImageView petView;
-    private ImageView itemView;
-    private LinearLayout petLL;
+    private String petImgName;
+    private String itemImgName;
 
     private ProgressBar pb;
     private int progress=0;
@@ -83,90 +94,23 @@ public class MainActivity extends AppCompatActivity {
     static Intent petIntent;
     private long diff = 944697600;
 
+    private DetectService mDetectService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         initBackground();
-
-        mSharedPreferences = getSharedPreferences("SLEEP_WAKE_TIME", Context.MODE_PRIVATE);
-        sleep_time = (mSharedPreferences.getLong("SLEEP_TIME_LONG",0)/1000 + diff);
-        wake_time = (mSharedPreferences.getLong("WAKE_TIME_LONG",0)/1000 + diff);
-        System.out.println("sleep_time: "+sleep_time.toString());
-        System.out.println("wake_time: "+wake_time.toString());
-        long sleep_last = wake_time - sleep_time;
-        long period = sleep_last;
-        System.out.println(period);
-        petView = findViewById(R.id.home_pet);
-        itemView = findViewById(R.id.home_item);
         initPetView();
+        initProgressBar();
+        initNevigationView();
+        mDetectService = new DetectService();
+        IntentFilter filter = new IntentFilter("xjtlu.eevee.nekosleep");
+        registerReceiver(mDetectService, filter);
+    }
 
-        petLL = findViewById(R.id.home_pet_item);
-
-        petLL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                checkAndRequirePermission();
-            }
-        });
-
-        pb = (ProgressBar) findViewById(R.id.progressBar);
-        //设置进度条的最大数值
-        pb.setMax(1000);
-        //一开始进度条的进度是0
-        pb.setProgress(0);
-        sleeporwake = findViewById(R.id.sleeporwake);
-        sleeporwake.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                Date date = new Date(System.currentTimeMillis());
-                long time_current = date.getTime()/1000;
-                System.out.println(time_current);
-                if(!issleeped) {
-                    issleeped = true;
-                    petView.setImageDrawable(null);
-                    sleeporwake.setText(R.string.home_wake);
-                    StartTimer(period);
-                    if (Math.abs(time_current-sleep_time)<=3600){
-                        sleep_result = true;
-                    }
-                }
-                else{
-                    issleeped = false;
-                    sleeporwake.setText(R.string.home_sleep);
-                    EndTimer();
-                    if (Math.abs(time_current-wake_time)<=3600){
-                        wake_result = true;
-                    }
-                    if (wake_result&&sleep_result){
-                        System.out.println("success");sleepResult();
-                    }else{
-                        System.out.println("fail");
-                    }
-                    progress=0;
-                    pb.setProgress(0);
-                }
-            }
-        });
-
+    public void initNevigationView(){
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, 0, 0);
-        mDrawerToggle.syncState();
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (drawer.isDrawerOpen(GravityCompat.START)) {
-                    drawer.closeDrawer(GravityCompat.START);
-                } else {
-                    drawer.openDrawer((int)Gravity.START);
-                }
-            }
-        });
-
-        drawer.addDrawerListener(mDrawerToggle);
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
         navigationView.inflateHeaderView(R.layout.nav_header_main);
@@ -176,12 +120,15 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()){
                     case R.id.nav_home:
-                        Intent it = new Intent(MainActivity.this,MainActivity.class);
-                        startActivity(it);
+                        drawer.closeDrawer(GravityCompat.START);
                         return true;
                     case R.id.nav_pets:
                         Intent it1 = new Intent(MainActivity.this, PetScreenSlideActivity.class);
                         startActivity(it1);
+                        if(petStarted){
+                            stopService(petIntent);
+                            petStarted = false;
+                        }
                         return true;
                     case R.id.nav_items:
                         Intent it2 = new Intent(MainActivity.this, ItemScreenSlideActivity.class);
@@ -196,6 +143,105 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        DigitalClock clock = findViewById(R.id.home_clock);
+        clock.setOnTouchListener(new View.OnTouchListener() {
+            Drawable hamburgerIcon = clock.getCompoundDrawables()[0];
+            Drawable confirmIcon = clock.getCompoundDrawables()[2];
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getX() < view.getWidth() - view.getPaddingRight()
+                        && motionEvent.getX() > view.getWidth() - view.getPaddingRight() - confirmIcon.getBounds().width()
+                        && motionEvent.getY() < confirmIcon.getBounds().height() + view.getPaddingBottom()
+                        && motionEvent.getY() > view.getPaddingTop()){
+                    gotoResult();
+                }
+
+                if (motionEvent.getX() < hamburgerIcon.getBounds().width()+ view.getPaddingLeft()
+                        && motionEvent.getX() > view.getPaddingLeft()
+                        && motionEvent.getY() < hamburgerIcon.getBounds().height() + view.getPaddingBottom()
+                        && motionEvent.getY() > view.getPaddingBottom()){
+                    if (drawer.isDrawerOpen(GravityCompat.START)) {
+                        drawer.closeDrawer(GravityCompat.START);
+                    } else {
+                        drawer.openDrawer((int)Gravity.START);
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
+    public void initProgressBar(){
+        pb = (ProgressBar) findViewById(R.id.progress_bar);
+        pb.setMax(1000);
+        pb.setProgress(0);
+        pb.setVisibility(View.INVISIBLE);
+        sleeporwake = findViewById(R.id.sleeporwake);
+        sleeporwake.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Date date = new Date(System.currentTimeMillis());
+                long time_current = date.getTime()/1000;
+                System.out.println(time_current);
+                if(!issleeped) {
+                    int length = getSleepLength();
+                    if(length==0){
+                        Toast.makeText(getApplicationContext(),"Please set sleep and wake up time", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MainActivity.this, UserSettingsActivity.class);
+                        startActivity(intent);
+                    }else {
+                        issleeped = true;
+                        pb.setVisibility(View.VISIBLE);
+                        setImg(petView, petImgName + "_sleep", "home");
+                        sleeporwake.setText(R.string.home_cancel);
+                        StartTimer(length);
+                    }
+                }
+                else{
+                    issleeped = false;
+                    sleeporwake.setText(R.string.home_sleep);
+                    EndTimer();
+                    if (wake_result&&sleep_result){
+                        System.out.println("success");sleepResult();
+                    }else{
+                        System.out.println("fail");
+                    }
+                    progress=0;
+                    pb.setProgress(0);
+                }
+            }
+        });
+    }
+
+    // Sleep length measured by seconds
+    public int getSleepLength(){
+        mSharedPreferences = getSharedPreferences("SLEEP_WAKE_TIME", Context.MODE_PRIVATE);
+        sleep_time = (mSharedPreferences.getString("SLEEP_TIME",""));
+        wake_time = (mSharedPreferences.getString("WAKE_TIME",""));
+        //System.out.println("sleep_time: "+sleep_time);
+        //System.out.println("wake_time: "+wake_time);
+
+        int period;
+        if(sleep_time.equals("")||wake_time.equals("")){
+            period = 0;
+        }else {
+            int sHour = Integer.valueOf(sleep_time.split(":")[0]);
+            int sMin = Integer.valueOf(sleep_time.split(":")[1]);
+            int wHour = Integer.valueOf(wake_time.split(":")[0]);
+            int wMin = Integer.valueOf(wake_time.split(":")[1]);
+            period = getTimeLength(sHour, sMin, wHour, wMin);
+        }
+        return period;
+    }
+
+    public int getTimeLength(int hourStart, int minStart, int hourEnd, int minEnd){
+        int length;
+        if (hourStart > hourEnd) {
+            length = (24 - hourStart + hourEnd) * 3600 + (minEnd - minStart) * 60;
+        } else {
+            length = (hourEnd - hourStart) * 3600 + (minEnd - minStart) * 60;
+        }
+        return length;
     }
 
     public void sleepResult(){
@@ -229,23 +275,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initPetView(){
+        petView = findViewById(R.id.home_pet);
         SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
         String petId = sp.getString("petId", "empty");
         String itemId = sp.getString("itemId", "empty");
-        String petImgName = sp.getString("petImgName", "snowball");
-        String itemImgName = sp.getString("itemImgName", "empty");
-        setImg(petView, petImgName, "home");
-        setImg(itemView, itemImgName, "itembook");
+        petImgName = sp.getString("petImgName", "pikachu");
+        itemImgName = sp.getString("itemImgName", "empty");
+        setImg(petView, petImgName+"_"+itemImgName, "home");
+        petView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkAndRequirePermission();
+            }
+        });
     }
 
     public void setImg(ImageView view, String name, String type){
-        if(name.equals("empty")) {
+        if(name.equals("empty_empty")) {
             view.setImageDrawable(null);
         }else {
-            Drawable item_img = AssetReader.getDrawableFromAssets(
+            Bitmap item_img = AssetReader.loadImageFromAssets(
                     getApplicationContext(), type + "_img/" + name + ".png");
-            item_img.setBounds(0, 0, item_img.getIntrinsicWidth(), item_img.getIntrinsicHeight());
-            view.setImageDrawable(item_img);
+            Drawable item_dr = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(item_img, 100, 100, true));
+            view.setImageDrawable(item_dr);
         }
     }
 
@@ -262,9 +314,6 @@ public class MainActivity extends AppCompatActivity {
         if (issleeped) {
             EndTimer();
         }
-//        Intent intent = getIntent();
-//        finish();
-//        startActivity(intent);
     }
 
     @Override
@@ -280,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
             serviceForegroundIntent = null;
         }
         if (issleeped) {
-            StartTimer(period);
+
         }
     }
 
@@ -300,8 +349,22 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void StartTimer(long period) {
+    public void StartTimer(int period) {
         Date time_current = new Date(System.currentTimeMillis());
+        Calendar calendar = Calendar. getInstance();
+        calendar.add( Calendar. DATE, +1);
+        Date date= calendar.getTime();
+        int cHour = calendar.get(Calendar.HOUR);
+        int cMin = calendar.get(Calendar.MINUTE);
+        int sHour = Integer.valueOf(sleep_time.split(":")[0]);
+        int sMin = Integer.valueOf(sleep_time.split(":")[1]);
+        int wHour = Integer.valueOf(wake_time.split(":")[0]);
+        int wMin = Integer.valueOf(wake_time.split(":")[1]);
+
+        if(getTimeLength(sHour, sMin, cHour, cMin)<7200){
+            //can sleep
+        }
+
         //如果timer和timerTask已经被置null了
         if (timer == null&&timerTask==null) {
             //新建timer和timerTask
@@ -309,23 +372,11 @@ public class MainActivity extends AppCompatActivity {
             timerTask = new TimerTask() {
                 @Override
                 public void run() {
-                    //每次progress加一
-                    progress++;
-                    //如果进度条满了的话
-                    if (progress == 1001) {
-                        progress = 1000;
-                    }
-                    //设置进度条进度
-                    pb.setProgress(progress);
+                    pb.setProgress(period);
                 }
             };
-            /*开始执行timer,第一个参数是要执行的任务，
-            第二个参数是开始的延迟时间（单位毫秒）或者是Date类型的日期，代表开始执行时的系统时间
-            第三个参数是计时器两次计时之间的间隔（单位毫秒）*/
         }
-        if (period>0) {
-            timer.schedule(timerTask, time_current, period);
-        }
+        timer.schedule(timerTask, time_current, 60000);
     }
 
 
@@ -339,7 +390,6 @@ public class MainActivity extends AppCompatActivity {
     public void launchPet () {
         if (!petStarted) {
             petView.setImageDrawable(null);
-            itemView.setImageDrawable(null);
             petIntent = new Intent(getApplicationContext(), FloatWindowManagerService.class);
             startService(petIntent);
             petStarted = true;
@@ -368,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
             if(ContextCompat.checkSelfPermission(this,
                     Manifest.permission.SYSTEM_ALERT_WINDOW)
                     != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW}, 0);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW}, OVERLAY_PERMISSION_REQ_CODE);
                 System.out.println("Success?");
             }else {
                 launchPet();
@@ -389,7 +439,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 0) {
+        if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
             if(ContextCompat.checkSelfPermission(this,
                     Manifest.permission.SYSTEM_ALERT_WINDOW)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -405,5 +455,23 @@ public class MainActivity extends AppCompatActivity {
         if(!petStarted) {
             initPetView();
         }
+    }
+
+    public void gotoResult(){
+            Intent intent = new Intent(MainActivity.this, SleepResultActivity.class);
+            Bundle bundle = new Bundle();
+            SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
+            String type = sp.getString("nextType", "empty");
+            if(type.equals("empty")){
+                type = "pet";
+                bundle.putString("petId", "00000001");
+            }else if(type.equals("pet")){
+                bundle.putString("petId", sp.getString("nextItemId", "empty"));
+            }else if(type.equals("item")){
+                bundle.putString("itemId", sp.getString("nextItemId", "empty"));
+            }
+            bundle.putString("type", type);
+            intent.putExtras(bundle);
+            startActivity(intent);
     }
 }

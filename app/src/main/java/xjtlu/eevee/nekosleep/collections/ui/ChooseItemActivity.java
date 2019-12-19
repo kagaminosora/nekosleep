@@ -1,7 +1,10 @@
 package xjtlu.eevee.nekosleep.collections.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -25,6 +28,7 @@ import xjtlu.eevee.nekosleep.collections.AssetReader;
 import xjtlu.eevee.nekosleep.collections.Injection;
 import xjtlu.eevee.nekosleep.collections.persistence.Item;
 import xjtlu.eevee.nekosleep.collections.persistence.Pet;
+import xjtlu.eevee.nekosleep.share.ShareUtil;
 
 public class ChooseItemActivity extends AppCompatActivity {
     private final CompositeDisposable disposable = new CompositeDisposable();
@@ -91,22 +95,21 @@ public class ChooseItemActivity extends AppCompatActivity {
     }
 
     public void setPetImg(){
-        Drawable pet_img = AssetReader.getDrawableFromAssets(
-                appContext, "petbook_img/" + chosenPet.getImageName() + ".png");
-        pet_img.setBounds(0,0,pet_img.getMinimumWidth(),pet_img.getMinimumHeight());
-        chosenPetImg.setImageDrawable(pet_img);
+        Bitmap pet_img = AssetReader.loadImageFromAssets(
+                appContext, "petbook_img/" + chosenPet.getImgName() + ".png");
+        Drawable pet_dr = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(pet_img, 100, 100, true));
+        chosenPetImg.setImageDrawable(pet_dr);
     }
 
     public void setItemImg(String itemName, ImageView itemView){
-        Drawable item_img = AssetReader.getDrawableFromAssets(
+        Bitmap item_img = AssetReader.loadImageFromAssets(
                 appContext, "itembook_img/" + itemName + ".png");
-        item_img.setBounds(0,0,item_img.getIntrinsicWidth(),item_img.getIntrinsicHeight());
-        itemView.setImageDrawable(item_img);
+        Drawable item_dr = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(item_img, 100, 100, true));
+        itemView.setImageDrawable(item_dr);
     }
 
     public void initGridLayout(){
         itemGrid = findViewById(R.id.gl_ch_items);
-        int itemNum = itemGrid.getChildCount();
 
         disposable.add(petViewModel.getPetItems(petId)
                 .subscribeOn(Schedulers.io())
@@ -114,11 +117,11 @@ public class ChooseItemActivity extends AppCompatActivity {
                 .subscribe(itemList -> {
                         for (int i=0; i<itemList.size(); i++){
                             Item item = itemList.get(i);
-                            if(item.active) {
+                            if(item.isActive()) {
                                 CardView itemCardView = (CardView) itemGrid.getChildAt(i);
                                 ImageView bgView = (ImageView) itemCardView.getChildAt(0);
                                 ImageView itemView = (ImageView) itemCardView.getChildAt(1);
-                                setItemImg(item.getImageName(), itemView);
+                                setItemImg(item.getImgName(), itemView);
                                 itemCardView.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -129,7 +132,7 @@ public class ChooseItemActivity extends AppCompatActivity {
                                         }
                                         previousBgView = bgView;
                                         chosenItem = item;
-                                        setItemImg(item.getImageName(), chosenItemImg);
+                                        setItemImg(item.getImgName(), chosenItemImg);
                                     }
                                 });
                             }
@@ -140,14 +143,22 @@ public class ChooseItemActivity extends AppCompatActivity {
 
     public void initChooseItemTV(){
         Drawable closeIcon = cItemTV.getCompoundDrawables()[0];
+        Drawable confirmIcon = cItemTV.getCompoundDrawables()[2];
         cItemTV.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getX() < view.getWidth() - view.getPaddingRight()
+                        && motionEvent.getX() > view.getWidth() - view.getPaddingRight() - confirmIcon.getBounds().width()
+                        && motionEvent.getY() < confirmIcon.getBounds().height() + view.getPaddingBottom()
+                        && motionEvent.getY() > view.getPaddingTop()){
+                    savePreferences();
+                    finish();
+                }
+
                 if (motionEvent.getX() < closeIcon.getBounds().width()+ view.getPaddingLeft()
                         && motionEvent.getX() > view.getPaddingLeft()
                         && motionEvent.getY() < closeIcon.getBounds().height() + view.getPaddingBottom()
                         && motionEvent.getY() > view.getPaddingBottom()){
-                    savePreferences();
                     finish();
                 }
                 return false;
@@ -163,18 +174,15 @@ public class ChooseItemActivity extends AppCompatActivity {
         SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
         SharedPreferences.Editor editor =  sp.edit();
         editor.putString("petId", petId);
-        editor.putString("petImgName", chosenPet.getImageName());
+        editor.putString("petImgName", chosenPet.getImgName());
         if(chosenItem == null){
             editor.putString("itemId", "empty");
             editor.putString("itemImgName", "empty");
         }else {
             editor.putString("itemId", itemId);
-            editor.putString("itemImgName", chosenItem.getImageName());
+            editor.putString("itemImgName", chosenItem.getImgName());
         }
         editor.commit();
-        //String petIdSP = sp.getString("petId","empty");
-        //String itemIdSP = sp.getString("itemId","empty");
-        //Toast.makeText(getApplicationContext(),petIdSP+", "+itemIdSP, Toast.LENGTH_SHORT).show();
     }
 
     public void setItemId(String itemId){

@@ -18,7 +18,7 @@ public interface ItemDao {
     Flowable<List<Item>> getItemByPetId(String petId);
 
     @Query("SELECT * FROM book_item WHERE item_id = :itemId")
-    Flowable<Item> findById(String itemId);
+    Flowable<Item> getItemById(String itemId);
 
     @Query("SELECT * FROM book_item WHERE name LIKE :name")
     Item findByName(String name);

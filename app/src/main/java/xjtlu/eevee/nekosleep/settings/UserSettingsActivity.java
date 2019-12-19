@@ -38,34 +38,7 @@ public class UserSettingsActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()){
-                case R.id.nav_home:
-                    Intent it = new Intent(UserSettingsActivity.this, MainActivity.class);
-                    startActivity(it);
-                    return true;
-                case R.id.nav_pets:
-                    Intent it1 = new Intent(UserSettingsActivity.this, PetScreenSlideActivity.class);
-                    startActivity(it1);
-                    return true;
-                case R.id.nav_items:
-                    Intent it2 = new Intent(UserSettingsActivity.this, ItemScreenSlideActivity.class);
-                    startActivity(it2);
-                    return true;
-                case R.id.nav_settings:
-//                    Intent it3 = new Intent(UserSettingsActivity.this, UserSettingsActivity.class);
-//                    startActivity(it3);
-                    return true;
-            }
-            return false;
-        });
-
+        setContentView(R.layout.settingsv3);
         mSharedPreferences = getSharedPreferences(SLEEP_WAKE_TIME, Context.MODE_PRIVATE);
         mSharedPreferences1 = getSharedPreferences("ALARM_PREF", Context.MODE_PRIVATE);
 

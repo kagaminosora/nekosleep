@@ -1,14 +1,18 @@
 package xjtlu.eevee.nekosleep.collections.ui;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +33,7 @@ import xjtlu.eevee.nekosleep.collections.persistence.Item;
 
 public class ItemScreenSlideActivity extends AppCompatActivity {
     Context appContext;
+    private TextView titleTV;
 
     private static final String TAG = PetScreenSlideActivity.class.getSimpleName();
     private final CompositeDisposable disposable = new CompositeDisposable();
@@ -36,7 +41,7 @@ public class ItemScreenSlideActivity extends AppCompatActivity {
     private PetViewModel petViewModel;
 
     private static int NUM_PAGE = 3;
-    ViewPager page_one;
+    ViewPager page;
     ArrayList<View> pageList;
     LinearLayout pageIndicator;
     ViewPagerAdapter pageAdapter;
@@ -56,10 +61,36 @@ public class ItemScreenSlideActivity extends AppCompatActivity {
 
     public void init() {
         appContext = getApplicationContext();
-        initPetData();
+        initTitle();
+        initData();
+        initViewPager();
+    }
 
+    public void initTitle(){
+        titleTV = findViewById(R.id.item_title);
+        Drawable backIcon = titleTV.getCompoundDrawables()[0];
+        titleTV.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getX() < backIcon.getBounds().width()+ view.getPaddingLeft()
+                        && motionEvent.getX() > view.getPaddingLeft()
+                        && motionEvent.getY() < backIcon.getBounds().height() + view.getPaddingBottom()
+                        && motionEvent.getY() > view.getPaddingBottom()){
+                    finish();
+                }
+                return false;
+            }
+        });
+    }
+
+    public void initData(){
+        petViewModelFactory = Injection.provideViewModelFactory(this);
+        petViewModel = new ViewModelProvider(this, petViewModelFactory).get(PetViewModel.class);
+    }
+
+    public void initViewPager(){
         //viewpager
-        page_one = (ViewPager) findViewById(R.id.view_pager_items);
+        page = (ViewPager) findViewById(R.id.view_pager_items);
         pageList = new ArrayList<View>();
 
         //Set the first dot to inactive
@@ -75,13 +106,12 @@ public class ItemScreenSlideActivity extends AppCompatActivity {
                     for (int i = 0; i < NUM_PAGE; i++) {
                         pageList.add(getItemPage(i, itemList));
                     }
-
                     pageAdapter = new ViewPagerAdapter(pageList);
-                    page_one.setAdapter(pageAdapter);
-                    }, throwable -> Log.e(TAG, "Unable to load image", throwable)));
+                    page.setAdapter(pageAdapter);
+                }, throwable -> Log.e(TAG, "Unable to load image", throwable)));
 
         // Scroll Listener
-        page_one.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        page.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             private int lastPage;
             //during scroll
             @Override
@@ -107,11 +137,6 @@ public class ItemScreenSlideActivity extends AppCompatActivity {
         });
     }
 
-    public void initPetData(){
-        petViewModelFactory = Injection.provideViewModelFactory(this);
-        petViewModel = new ViewModelProvider(this, petViewModelFactory).get(PetViewModel.class);
-    }
-
     private void clearIndicatorFocusedState() {
         int childCount = pageIndicator.getChildCount();
         for (int i = 0; i < childCount; i++) {
@@ -126,19 +151,19 @@ public class ItemScreenSlideActivity extends AppCompatActivity {
         int last = (pageNum+1)*itemNum<itemList.size()? (pageNum+1)*itemNum : itemList.size();
         for (int i = pageNum * itemNum; i < last; i++) {
             Item item = itemList.get(i);
-            if (item.active) {
+            if (item.isActive()) {
                 CardView itemCardView = (CardView) itemGrid.getChildAt(i-pageNum*itemNum);
                 ImageView imageView = (ImageView)itemCardView.getChildAt(0);
-                setItemImg(item.getItemName(), imageView);
+                setItemImg(item.getImgName(), imageView);
             }
         }
         return page;
     }
 
     public void setItemImg(String itemName, ImageView itemView){
-        Drawable item_img = AssetReader.getDrawableFromAssets(
+        Bitmap item_img = AssetReader.loadImageFromAssets(
                 appContext, "itembook_img/" + itemName + ".png");
-        item_img.setBounds(0,0,item_img.getIntrinsicWidth(),item_img.getIntrinsicHeight());
-        itemView.setImageDrawable(item_img);
+        Drawable item_dr = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(item_img, 100, 100, true));
+        itemView.setImageDrawable(item_dr);
     }
 }

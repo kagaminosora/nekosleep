@@ -16,6 +16,9 @@
 
 package xjtlu.eevee.nekosleep.collections.ui;
 
+import android.os.Debug;
+import android.util.Log;
+
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
@@ -34,6 +37,8 @@ public class PetViewModel extends ViewModel {
     private final PetDataSource mDataSource;
 
     private Pet mPet;
+
+    private Item mItem;
 
     private List<Item> petItems;
 
@@ -59,6 +64,15 @@ public class PetViewModel extends ViewModel {
                 });
     }
 
+    public Flowable<Item> getItem(String itemId){
+        return mDataSource.getItem(itemId)
+                .map(item -> {
+                     mItem = item;
+                     return item;
+                }
+        );
+    }
+
     public Flowable<List<Item>> getPetItems(String petId) {
         return mDataSource.getPetItems(petId).map(
                 items -> {
@@ -78,6 +92,7 @@ public class PetViewModel extends ViewModel {
     }
 
     public Flowable<List<Item>> getAllItems(){
+        Log.d("database", "get all");
         return mDataSource.getAllItems().map(
                 items -> {
                     mItems = items;
@@ -93,9 +108,10 @@ public class PetViewModel extends ViewModel {
      * @return a {@link Completable} that completes when the user name is updated
      */
     public void updatePetActiveness(String petId) {
-        if(mPets==null) getAllPets();
-        for(Pet pet: mPets){
-            if(pet.getId()==petId) pet.activate();
+        if(mPets!=null) {
+            for (Pet pet : mPets) {
+                if (pet.getId() == petId) pet.setActive(true);
+            }
         }
         mDataSource.updatePetActive(petId);
     }
@@ -103,15 +119,15 @@ public class PetViewModel extends ViewModel {
     /**
      * Update activeness of the item.
      *
-     * @param petId the pet id
+     * @param itemId the item id
      * @return a {@link Completable} that completes when the user name is updated
      */
-    public void updateItemActiveness(String petId) {
-
-        if(mPets==null) getAllItems();
-        for(Item item: mItems){
-            if(item.getId()==petId) item.activate();
+    public void updateItemActiveness(String itemId) {
+        if(mItems!=null) {
+            for (Item item : mItems) {
+                if (item.getId() == itemId) item.activate();
+            }
         }
-        mDataSource.updatePetActive(petId);
+        mDataSource.updateItemActive(itemId);
     }
 }

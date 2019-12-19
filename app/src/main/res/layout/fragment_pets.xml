@@ -20,8 +20,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:drawableTop="@drawable/default_cat"
-            android:text="@string/default_pb_name"
-            android:textAlignment="center" />
+            android:text="@string/coming_soon"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            />
     </androidx.cardview.widget.CardView>
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
@@ -36,8 +38,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:drawableTop="@drawable/default_cat"
-            android:text="@string/default_pb_name"
-            android:textAlignment="center" />
+            android:text="@string/coming_soon"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            />
     </androidx.cardview.widget.CardView>
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
@@ -52,8 +56,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:drawableTop="@drawable/default_cat"
-            android:text="@string/default_pb_name"
-            android:textAlignment="center" />
+            android:text="@string/coming_soon"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            />
     </androidx.cardview.widget.CardView>
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
@@ -68,8 +74,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:drawableTop="@drawable/default_cat"
-            android:text="@string/default_pb_name"
-            android:textAlignment="center" />
+            android:text="@string/coming_soon"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            />
     </androidx.cardview.widget.CardView>
 
 </GridLayout>

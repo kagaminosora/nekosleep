@@ -39,6 +39,8 @@ public class LocalPetDataSource implements PetDataSource {
         return mPetDao.getPetById(id);
     }
 
+    public Flowable<Item> getItem(String id){return mItemDao.getItemById(id);}
+
     @Override
     public Flowable<List<Pet>> getAllPets() {
         return mPetDao.getAll();
@@ -48,6 +50,9 @@ public class LocalPetDataSource implements PetDataSource {
     public void updatePetActive(String petId) {
        mPetDao.setActive(true, petId);
     }
+
+    @Override
+    public void updateItemActive(String itemId) { mItemDao.setActive(true, itemId); }
 
     @Override
     public Flowable<List<Item>> getPetItems(String petId) {
