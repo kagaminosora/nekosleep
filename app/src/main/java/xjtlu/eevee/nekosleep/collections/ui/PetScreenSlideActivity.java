@@ -170,6 +170,7 @@ public class PetScreenSlideActivity extends AppCompatActivity {
                         bundle.putString("petId", pet.getId());
                         intent.putExtras(bundle);
                         startActivity(intent);
+                        finish();
                     }
                 });
             }else {

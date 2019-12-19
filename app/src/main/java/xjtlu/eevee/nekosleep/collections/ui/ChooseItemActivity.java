@@ -129,11 +129,11 @@ public class ChooseItemActivity extends AppCompatActivity {
                                     @Override
                                     public void onClick(View view) {
                                         Drawable bg = getResources().getDrawable(R.drawable.crv_cii_bg);
-                                        bgView.setImageDrawable(bg);
                                         if (previousBgView != null) {
                                             previousBgView.setImageDrawable(null);
                                         }
                                         previousBgView = bgView;
+                                        bgView.setImageDrawable(bg);
                                         chosenItem = item;
                                         setItemImg(item.getImgName(), chosenItemImg);
                                     }
@@ -162,6 +162,8 @@ public class ChooseItemActivity extends AppCompatActivity {
                         && motionEvent.getX() > view.getPaddingLeft()
                         && motionEvent.getY() < closeIcon.getBounds().height() + view.getPaddingBottom()
                         && motionEvent.getY() > view.getPaddingBottom()){
+                    Intent intent = new Intent(ChooseItemActivity.this, PetScreenSlideActivity.class);
+                    startActivity(intent);
                     finish();
                 }
                 return false;

@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.nav_pets:
                         Intent it1 = new Intent(MainActivity.this, PetScreenSlideActivity.class);
                         startActivity(it1);
+                        drawer.closeDrawer(GravityCompat.START);
                         if(petStarted){
                             stopService(petIntent);
                             petStarted = false;
@@ -133,10 +134,12 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.nav_items:
                         Intent it2 = new Intent(MainActivity.this, ItemScreenSlideActivity.class);
                         startActivity(it2);
+                        drawer.closeDrawer(GravityCompat.START);
                         return true;
                     case R.id.nav_settings:
                         Intent it3 = new Intent(MainActivity.this, UserSettingsActivity.class);
                         startActivity(it3);
+                        drawer.closeDrawer(GravityCompat.START);
                         return true;
                 }
                 return false;
@@ -173,10 +176,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void initProgressBar(){
         pb = (ProgressBar) findViewById(R.id.progress_bar);
-        pb.setMax(1000);
+        pb.setMax(getSleepLength());
         pb.setProgress(0);
         pb.setVisibility(View.INVISIBLE);
         sleeporwake = findViewById(R.id.sleeporwake);
+        sleeporwake.setText(R.string.home_sleep);
         sleeporwake.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -199,6 +203,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else{
                     issleeped = false;
+                    pb.setVisibility(View.INVISIBLE);
+                    initPetView();
                     sleeporwake.setText(R.string.home_sleep);
                     EndTimer();
                     if (wake_result&&sleep_result){
@@ -240,6 +246,9 @@ public class MainActivity extends AppCompatActivity {
             length = (24 - hourStart + hourEnd) * 3600 + (minEnd - minStart) * 60;
         } else {
             length = (hourEnd - hourStart) * 3600 + (minEnd - minStart) * 60;
+        }
+        if(length>36000){
+            length=0;
         }
         return length;
     }
@@ -350,10 +359,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void StartTimer(int period) {
+        pb.setMax(getSleepLength());
         Date time_current = new Date(System.currentTimeMillis());
         Calendar calendar = Calendar. getInstance();
-        calendar.add( Calendar. DATE, +1);
-        Date date= calendar.getTime();
+        //calendar.add( Calendar. DATE, +1);
+        //Date date= calendar.getTime();
         int cHour = calendar.get(Calendar.HOUR);
         int cMin = calendar.get(Calendar.MINUTE);
         int sHour = Integer.valueOf(sleep_time.split(":")[0]);
@@ -372,7 +382,15 @@ public class MainActivity extends AppCompatActivity {
             timerTask = new TimerTask() {
                 @Override
                 public void run() {
-                    pb.setProgress(period);
+                    Calendar calendar = Calendar. getInstance();
+                    int cHour = calendar.get(Calendar.HOUR);
+                    int cMin = calendar.get(Calendar.MINUTE);
+                    Log.d("timer", String.valueOf(getTimeLength(sHour,sMin,cHour,cMin)));
+                    pb.setProgress(getTimeLength(sHour,sMin,cHour,cMin));
+                    if(getTimeLength(wHour,wMin,cHour,cMin)>0) {
+                        timer.cancel();
+                        gotoResult();
+                    }
                 }
             };
         }
@@ -455,6 +473,7 @@ public class MainActivity extends AppCompatActivity {
         if(!petStarted) {
             initPetView();
         }
+        initProgressBar();
     }
 
     public void gotoResult(){
