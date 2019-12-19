@@ -62,7 +62,7 @@ public class Item {
 
     public String getOwner() { return owner; }
 
-    public void activate(){active = true; }
+    public void setActive(){active = true; }
 
     public boolean isActive() { return active; }
 

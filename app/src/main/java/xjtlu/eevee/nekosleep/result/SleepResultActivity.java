@@ -88,6 +88,7 @@ public class SleepResultActivity extends AppCompatActivity {
         petViewModel = new ViewModelProvider(this, petViewModelFactory).get(PetViewModel.class);
         if(type.equals("finish")) {
             resultTV.setText(R.string.result_get_all);
+            itemImg = getDrawable(R.drawable.medal);
         }else {
             editDatabase();
             setImg();
@@ -182,7 +183,7 @@ public class SleepResultActivity extends AppCompatActivity {
             String nextId = String.valueOf(id);
             if(id<10){
                 nextId = "0000000"+nextId;
-            }else {
+            }else if (id<100) {
                 nextId = "000000"+nextId;
             }
             editor.putString("nextType", "pet");
@@ -198,8 +199,6 @@ public class SleepResultActivity extends AppCompatActivity {
                 nextId = "0000000"+nextId;
             }else if(id<100){
                 nextId = "000000"+nextId;
-            }else {
-                nextId = "00000"+nextId;
             }
             if(id<8) {
                 editor.putString("nextType", "item");

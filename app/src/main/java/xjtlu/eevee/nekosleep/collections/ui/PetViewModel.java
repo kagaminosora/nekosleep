@@ -50,14 +50,8 @@ public class PetViewModel extends ViewModel {
         mDataSource = dataSource;
     }
 
-    /**
-     * Get the user name of the user.
-     *
-     * @return a {@link Flowable} that will emit every time the user name has been updated.
-     */
     public Flowable<Pet> getPet(String id) {
         return mDataSource.getPet(id)
-                // for every emission of the user, get the user name
                 .map(pet -> {
                     mPet = pet;
                     return pet;
@@ -101,31 +95,19 @@ public class PetViewModel extends ViewModel {
         );
     }
 
-    /**
-     * Update activeness of the pet.
-     *
-     * @param petId the pet id
-     * @return a {@link Completable} that completes when the user name is updated
-     */
     public void updatePetActiveness(String petId) {
         if(mPets!=null) {
             for (Pet pet : mPets) {
-                if (pet.getId() == petId) pet.setActive(true);
+                if (pet.getId() == petId) pet.setActive();
             }
         }
         mDataSource.updatePetActive(petId);
     }
 
-    /**
-     * Update activeness of the item.
-     *
-     * @param itemId the item id
-     * @return a {@link Completable} that completes when the user name is updated
-     */
     public void updateItemActiveness(String itemId) {
         if(mItems!=null) {
             for (Item item : mItems) {
-                if (item.getId() == itemId) item.activate();
+                if (item.getId() == itemId) item.setActive();
             }
         }
         mDataSource.updateItemActive(itemId);

@@ -28,32 +28,12 @@ import xjtlu.eevee.nekosleep.collections.persistence.Pet;
  */
 public interface PetDataSource {
 
-    /**
-     * Gets the pet from the data source.
-     *
-     * @return the pet from the data source.
-     */
     Flowable<Pet> getPet(String id);
 
-    /**
-     * Gets the item from the data source.
-     *
-     * @return the item from the data source.
-     */
     Flowable<Item> getItem(String id);
 
-    /**
-     * Gets the pets from the data source.
-     *
-     * @return all pets from the data source.
-     */
     Flowable<List<Pet>> getAllPets();
 
-    /**
-     * Update the pet's condition
-     *
-     * @param petId the pet to be inserted or updated.
-     */
     void updatePetActive(String petId);
 
     void updateItemActive(String itemId);

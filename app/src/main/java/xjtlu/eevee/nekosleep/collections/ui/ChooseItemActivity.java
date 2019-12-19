@@ -34,28 +34,24 @@ public class ChooseItemActivity extends AppCompatActivity {
     private final CompositeDisposable disposable = new CompositeDisposable();
     private Context appContext;
     private static final String TAG = PetScreenSlideActivity.class.getSimpleName();
-    static ImageView previousBgView;
+    private ImageView previousBgView;
 
     private ViewModelFactory petViewModelFactory;
     private PetViewModel petViewModel;
 
-    Pet chosenPet;
-    Item chosenItem;
-    String petId;
-    String itemId;
-    ImageView chosenPetImg;
-    ImageView chosenItemImg;
-    GridLayout itemGrid;
-    TextView cItemTV;
+    private Pet chosenPet;
+    private Item chosenItem;
+    private String petId;
+    private String itemId;
+    private ImageView chosenPetImg;
+    private ImageView chosenItemImg;
+    private GridLayout itemGrid;
+    private TextView cItemTV;
 
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        Bundle bundle = this.getIntent().getExtras();
-        petId = bundle.getString("petId");
-        setContentView(R.layout.choose_item);
         init();
-
     }
 
     @Override
@@ -67,20 +63,27 @@ public class ChooseItemActivity extends AppCompatActivity {
         init();
     }
 
+    public void init(){
+        Bundle bundle = this.getIntent().getExtras();
+        petId = bundle.getString("petId");
+        setContentView(R.layout.choose_item);
+        appContext = getApplicationContext();
+        initViews();
+        initDatabase();
+        initObjects();
+        initGridLayout();
+        initChooseItemTV();
+    }
+
+    public void initViews(){
+        chosenPetImg = findViewById(R.id.img_cip);
+        chosenItemImg = findViewById(R.id.img_cii);
+        cItemTV = findViewById(R.id.tv_choose_item);
+    }
+
     public void initDatabase(){
         petViewModelFactory = Injection.provideViewModelFactory(this);
         petViewModel = new ViewModelProvider(this, petViewModelFactory).get(PetViewModel.class);
-    }
-
-    public void init(){
-        appContext = getApplicationContext();
-        initDatabase();
-        initObjects();
-        chosenPetImg = findViewById(R.id.img_cip);
-        chosenItemImg = findViewById(R.id.img_cii);
-        initGridLayout();
-        cItemTV = findViewById(R.id.tv_choose_item);
-        initChooseItemTV();
     }
 
     public void initObjects(){

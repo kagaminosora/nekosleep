@@ -43,9 +43,7 @@ public class ShareView extends FrameLayout {
         shareImg.setImageDrawable(drawable);
     }
 
-    public void setQRCode(Bitmap qrCode){
-        shareQR.setImageBitmap(qrCode);
-    }
+    public void setQRCode(Bitmap qrCode){ shareQR.setImageBitmap(qrCode); }
 
     public Bitmap createImage(){
         int widthMeasureSpec = MeasureSpec.makeMeasureSpec(IMAGE_WIDTH, MeasureSpec.EXACTLY);

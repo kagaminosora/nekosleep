@@ -61,6 +61,6 @@ public class Pet {
 
     public boolean isActive() { return active; }
 
-    public void setActive(boolean active){this.active = active;}
+    public void setActive(){this.active = true;}
 
 }

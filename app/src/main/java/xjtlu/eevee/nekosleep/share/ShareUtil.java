@@ -11,18 +11,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Hashtable;
 
 import xjtlu.eevee.nekosleep.R;
@@ -44,8 +38,9 @@ public class ShareUtil{
             shareView.setInfo(context.getResources().getString(R.string.share_text_pet));
         }else if(type.equals("item")){
             shareView.setInfo(context.getResources().getString(R.string.share_text_item));
+        }else if(type.equals("finish")){
+            shareView.setInfo("I got all items and pets in NekoSleep!");
         }
-        Drawable cat = context.getResources().getDrawable(R.drawable.default_cat);
         shareView.setImg(itemImg);
         shareView.setQRCode(generateQRCode());
         final Bitmap image = shareView.createImage();
@@ -88,7 +83,7 @@ public class ShareUtil{
             hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
         BitMatrix matrix = null;
         try {
-            matrix = new MultiFormatWriter().encode("Hello", BarcodeFormat.QR_CODE, 350, 350);
+            matrix = new MultiFormatWriter().encode("NekoSleep", BarcodeFormat.QR_CODE, 350, 350);
         } catch (WriterException e) {
             e.printStackTrace();
         }
