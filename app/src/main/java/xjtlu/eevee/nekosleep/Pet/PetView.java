@@ -1,13 +1,8 @@
 package xjtlu.eevee.nekosleep.Pet;
 
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Build;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -25,11 +20,10 @@ public class PetView extends AppCompatImageView {
     private float y;
     private ArrayList <String> animations;
     LinearLayout container;
-    static int height = 170;
-    static int width = 170;
+    static int height = 200;
+    static int width = 200;
     private int petNum;
     private Context mContext;
-
 
     public PetView (Context context) {
         super(context);

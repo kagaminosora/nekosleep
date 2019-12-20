@@ -26,6 +26,7 @@ public class FloatWindowManagerService extends Service {
     private Context mContext;
     private WindowManager.LayoutParams mLayoutParams;
     private LinearLayout linearLayout;
+    private boolean broadcasterFlag = false;
 
     @Override
     public void onCreate() {
@@ -44,12 +45,10 @@ public class FloatWindowManagerService extends Service {
         SharedPreferences sharedPreferences = this.getSharedPreferences("type", MODE_PRIVATE);
         int petNum = sharedPreferences.getInt("type", 0);
         mLayoutParams =  new WindowManager.LayoutParams(PetView.height, PetView.width, 0, 0, WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, PixelFormat.RGBA_8888);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //Android 8.0
             mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
         } else {
-            //其他版本
             mLayoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
         }
         mLayoutParams.format = PixelFormat.RGBA_8888;
@@ -95,7 +94,9 @@ public class FloatWindowManagerService extends Service {
                 }
             }
         };
+        if (broadcasterFlag){ unregisterReceiver(tickReceiver);}
         registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+        broadcasterFlag = true;
         return result;
     }
 

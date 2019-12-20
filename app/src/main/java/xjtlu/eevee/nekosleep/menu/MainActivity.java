@@ -429,7 +429,7 @@ public class MainActivity extends AppCompatActivity {
             sleep_result = true;//can sleep
         }else sleep_result = false;
 
-        //如果timer和timerTask已经被置null了
+        //if timer and timerTask are null
         if (timer == null&&timerTask==null) {
             //新建timer和timerTask
             timer = new Timer();
@@ -478,7 +478,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkAndRequirePermission () {
-        if (Build.VERSION.SDK_INT >= 23) {//6.0以上
+        if (Build.VERSION.SDK_INT >= 23) {//> 6.0
             if (Settings.canDrawOverlays(this)) {
                 launchPet();
             }else {

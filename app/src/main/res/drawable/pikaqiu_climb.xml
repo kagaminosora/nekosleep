@@ -6,4 +6,10 @@
         android:duration="200"/>
     <item android:drawable="@drawable/pikaqiu14"
         android:duration="200"/>
+    <item android:drawable="@drawable/pikaqiu12"
+        android:duration="200"/>
+    <item android:drawable="@drawable/pikaqiu13"
+        android:duration="200"/>
+    <item android:drawable="@drawable/pikaqiu14"
+        android:duration="200"/>
 </animation-list>
