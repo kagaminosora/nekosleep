@@ -27,6 +27,9 @@ import xjtlu.eevee.nekosleep.collections.ui.PetViewModel;
 import xjtlu.eevee.nekosleep.collections.ui.ViewModelFactory;
 import xjtlu.eevee.nekosleep.result.share.ShareUtil;
 
+/**
+ *
+ */
 public class SleepResultActivity extends AppCompatActivity {
     private final CompositeDisposable disposable = new CompositeDisposable();
     private static final String TAG = PetScreenSlideActivity.class.getSimpleName();
@@ -53,11 +56,11 @@ public class SleepResultActivity extends AppCompatActivity {
 
     public void onCreate(Bundle savedInstanceState, PersistableBundle persistableState){
         super.onCreate(savedInstanceState, persistableState);
-        setContentView(R.layout.sleep_result);
         init();
     }
 
     public void init(){
+        setContentView(R.layout.sleep_result);
         Bundle bundle = this.getIntent().getExtras();
         type = bundle.getString("type");
         if(type.equals("pet")){

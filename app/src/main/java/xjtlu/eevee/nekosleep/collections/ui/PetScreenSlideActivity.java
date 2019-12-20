@@ -32,6 +32,9 @@ import xjtlu.eevee.nekosleep.collections.AssetReader;
 import xjtlu.eevee.nekosleep.collections.Injection;
 import xjtlu.eevee.nekosleep.collections.persistence.Pet;
 
+/**
+ * Slide Pages for pets
+ */
 public class PetScreenSlideActivity extends AppCompatActivity {
     Context appContext;
 
@@ -43,26 +46,25 @@ public class PetScreenSlideActivity extends AppCompatActivity {
     private PetViewModel petViewModel;
 
     private static int NUM_PAGE = 4;
-    ViewPager viewPager;
-    ArrayList<View> pageList;
-    LinearLayout pageIndicator;
-    ViewPagerAdapter pageAdapter;
+    private ViewPager viewPager;
+    private ArrayList<View> pageList;
+    private LinearLayout pageIndicator;
+    private ViewPagerAdapter pageAdapter;
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.view_pager_pets_activity);
         init();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
-        setContentView(R.layout.view_pager_pets_activity);
         init();
     }
 
     public void init() {
         appContext = getApplicationContext();
+        setContentView(R.layout.view_pager_pets_activity);
         initTitle();
         initPetData();
         initViewPager();

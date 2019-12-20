@@ -1,7 +1,5 @@
 package xjtlu.eevee.nekosleep.collections.persistence;
 
-import android.graphics.Bitmap;
-
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
