@@ -1,4 +1,4 @@
-package xjtlu.eevee.nekosleep.share;
+package xjtlu.eevee.nekosleep.result.share;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -11,18 +11,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Hashtable;
 
 import xjtlu.eevee.nekosleep.R;
@@ -44,17 +40,18 @@ public class ShareUtil{
             shareView.setInfo(context.getResources().getString(R.string.share_text_pet));
         }else if(type.equals("item")){
             shareView.setInfo(context.getResources().getString(R.string.share_text_item));
+        }else if(type.equals("finish")){
+            shareView.setInfo("I got all items and pets in NekoSleep!");
         }
-        Drawable cat = context.getResources().getDrawable(R.drawable.default_cat);
         shareView.setImg(itemImg);
         shareView.setQRCode(generateQRCode());
         final Bitmap image = shareView.createImage();
         final Uri uri = saveImage(image);
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
-        Log.d("share", uri.toString());
+        //Log.d("share", uri.toString());
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-        Log.d("share", "putExtra");
+        //Log.d("share", "putExtra");
         shareIntent.setType("image/png");
         if (image != null && !image.isRecycled()) {
             image.recycle();
@@ -64,7 +61,7 @@ public class ShareUtil{
 
     public Uri saveImage(Bitmap bitmap){
         File path = context.getCacheDir();
-        String fileName = "shareImage.png";
+        String fileName = System.currentTimeMillis()+".png";
         File file = new File(path, fileName);
         if(file.exists()){
             file.delete();
@@ -82,13 +79,14 @@ public class ShareUtil{
         return FileProvider.getUriForFile(context, "xjtlu.eevee.nekosleep.fileprovider", file);
     }
 
+    //From https://github.com/yangxch/GenerateQRCode
     public Bitmap generateQRCode(){
         int BLACK = 0xff000000;
         Hashtable<EncodeHintType, String> hints = new Hashtable<EncodeHintType, String>();
             hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
         BitMatrix matrix = null;
         try {
-            matrix = new MultiFormatWriter().encode("Hello", BarcodeFormat.QR_CODE, 350, 350);
+            matrix = new MultiFormatWriter().encode("NekoSleep", BarcodeFormat.QR_CODE, 350, 350);
         } catch (WriterException e) {
             e.printStackTrace();
         }

@@ -16,6 +16,8 @@
 
 package xjtlu.eevee.nekosleep.collections.persistence;
 
+import java.util.List;
+
 import io.reactivex.Flowable;
 import xjtlu.eevee.nekosleep.collections.PetDataSource;
 
@@ -25,9 +27,11 @@ import xjtlu.eevee.nekosleep.collections.PetDataSource;
 public class LocalPetDataSource implements PetDataSource {
 
     private final PetDao mPetDao;
+    private final ItemDao mItemDao;
 
-    public LocalPetDataSource(PetDao petDao) {
+    public LocalPetDataSource(PetDao petDao, ItemDao itemDao) {
         mPetDao = petDao;
+        mItemDao = itemDao;
     }
 
     @Override
@@ -35,8 +39,28 @@ public class LocalPetDataSource implements PetDataSource {
         return mPetDao.getPetById(id);
     }
 
+    public Flowable<Item> getItem(String id){return mItemDao.getItemById(id);}
+
+    @Override
+    public Flowable<List<Pet>> getAllPets() {
+        return mPetDao.getAll();
+    }
+
     @Override
     public void updatePetActive(String petId) {
        mPetDao.setActive(true, petId);
+    }
+
+    @Override
+    public void updateItemActive(String itemId) { mItemDao.setActive(true, itemId); }
+
+    @Override
+    public Flowable<List<Item>> getPetItems(String petId) {
+        return mItemDao.getItemByPetId(petId);
+    }
+
+    @Override
+    public Flowable<List<Item>> getAllItems() {
+        return mItemDao.getAll();
     }
 }

@@ -1,7 +1,5 @@
 package xjtlu.eevee.nekosleep.collections.persistence;
 
-import android.graphics.Bitmap;
-
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -20,31 +18,49 @@ public class Item {
     @NonNull
     @PrimaryKey
     @ColumnInfo (name = "item_id")
-    public String itemId;
+    private String id;
 
     @NonNull
     @ColumnInfo(name = "name")
-    public String name;
+    private String name;
 
     @NonNull
     @ColumnInfo(name = "active")
-    public boolean active;
+    private boolean active;
 
     @NonNull
     @ColumnInfo(name = "img_name")
-    public String imageName;
+    private String imgName;
 
     @ColumnInfo(name = "owner")
-    public String owner;
+    private String owner;
 
     @Ignore
-    public String getId(){ return itemId; }
+    public Item(){
+        this.id = "00000000";
+        this.imgName = "pikachu";
+        this.name = "Pikachu";
+        this.active = true;
+        this.owner = "00000000";
+    }
 
-    public String getItemName() { return name; }
+    public Item(String id, String imgName, String name, Boolean active, String owner){
+        this.id = id;
+        this.imgName = imgName;
+        this.name = name;
+        this.active = active;
+        this.owner = owner;
+    }
 
-    public String getImageName() { return imageName; }
+    public String getId(){ return id; }
 
-    public String getOwnerId() { return owner; }
+    public String getName() { return name; }
+
+    public String getImgName() { return imgName; }
+
+    public String getOwner() { return owner; }
+
+    public void setActive(){active = true; }
 
     public boolean isActive() { return active; }
 

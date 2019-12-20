@@ -44,6 +44,7 @@ public class FloatWindowManagerService extends Service {
         SharedPreferences sharedPreferences = this.getSharedPreferences("type", MODE_PRIVATE);
         int petNum = sharedPreferences.getInt("type", 0);
         mLayoutParams =  new WindowManager.LayoutParams(PetView.height, PetView.width, 0, 0, WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, PixelFormat.RGBA_8888);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //Android 8.0
             mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
@@ -51,6 +52,7 @@ public class FloatWindowManagerService extends Service {
             //其他版本
             mLayoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
         }
+        mLayoutParams.format = PixelFormat.RGBA_8888;
         mContext = this.getApplicationContext();
         mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -58,6 +60,7 @@ public class FloatWindowManagerService extends Service {
         linearLayout.setBackgroundColor(Color.TRANSPARENT);
         PetView pet = (PetView)inflater.inflate(R.layout.pet_view, null,false);
         pet.container = linearLayout;
+        pet.setPetNum(petNum);
         linearLayout.addView(pet);
         addFloatingWindow();
         linearLayout.setOnTouchListener(new View.OnTouchListener() {

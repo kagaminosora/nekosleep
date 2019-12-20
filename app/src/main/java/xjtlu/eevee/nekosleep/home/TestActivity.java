@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.Manifest;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,7 +47,7 @@ public class TestActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_test);
         init();
     }
 
@@ -92,15 +94,14 @@ public class TestActivity extends AppCompatActivity {
                 SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
                 String type = sp.getString("nextType", "empty");
                 if(type.equals("empty")){
-                    bundle.putString("type", "pet");
-                    bundle.putString("petId", "00000000");
+                    type = "pet";
+                    bundle.putString("petId", "00000001");
                 }else if(type.equals("pet")){
-                    bundle.putString("type", "pet");
                     bundle.putString("petId", sp.getString("nextItemId", "empty"));
                 }else if(type.equals("item")){
-                    bundle.putString("type", "item");
                     bundle.putString("itemId", sp.getString("nextItemId", "empty"));
                 }
+                bundle.putString("type", type);
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -128,20 +129,19 @@ public class TestActivity extends AppCompatActivity {
         SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
         String petId = sp.getString("petId", "empty");
         String itemId = sp.getString("itemId", "empty");
-        String petImgName = sp.getString("petImgName", "empty");
+        String petImgName = sp.getString("petImgName", "pikachu");
         String itemImgName = sp.getString("itemImgName", "empty");
-        setImg((ImageView) cvPet.getChildAt(0), petImgName, "pet");
-        setImg((ImageView) cvPet.getChildAt(1), itemImgName, "item");
+        setImg((ImageView) cvPet.getChildAt(0), petImgName+"_"+itemImgName);
     }
 
-    public void setImg(ImageView view, String name, String type){
-        if(name.equals("empty")) {
+    public void setImg(ImageView view, String name){
+        if(name.equals("empty_empty")) {
             view.setImageDrawable(null);
         }else {
-            Drawable item_img = AssetReader.getDrawableFromAssets(
-                    getApplicationContext(), type + "book_img/" + name + ".png");
-            item_img.setBounds(0, 0, item_img.getIntrinsicWidth(), item_img.getIntrinsicHeight());
-            view.setImageDrawable(item_img);
+            Bitmap item_img = AssetReader.loadImageFromAssets(
+                    getApplicationContext(), "home_img/" + name + ".png");
+            Drawable item_dr = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(item_img, 100, 100, true));
+            view.setImageDrawable(item_dr);
         }
     }
 

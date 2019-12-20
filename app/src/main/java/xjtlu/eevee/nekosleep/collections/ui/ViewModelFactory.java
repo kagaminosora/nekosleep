@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package xjtlu.eevee.nekosleep.collections;
+package xjtlu.eevee.nekosleep.collections.ui;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import xjtlu.eevee.nekosleep.collections.PetDataSource;
 import xjtlu.eevee.nekosleep.collections.ui.PetViewModel;
 
 /**

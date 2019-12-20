@@ -20,19 +20,20 @@ import android.content.Context;
 
 import xjtlu.eevee.nekosleep.collections.persistence.LocalPetDataSource;
 import xjtlu.eevee.nekosleep.collections.persistence.PetBookDatabase;
+import xjtlu.eevee.nekosleep.collections.ui.ViewModelFactory;
 
 /**
  * Enables injection of data sources.
  */
 public class Injection {
 
-    public static PetDataSource provideUserDataSource(Context context) {
+    public static PetDataSource providePetDataSource(Context context) {
         PetBookDatabase database = PetBookDatabase.getInstance(context);
-        return new LocalPetDataSource(database.petDAO());
+        return new LocalPetDataSource(database.petDAO(), database.itemDAO());
     }
 
     public static ViewModelFactory provideViewModelFactory(Context context) {
-        PetDataSource dataSource = provideUserDataSource(context);
+        PetDataSource dataSource = providePetDataSource(context);
         return new ViewModelFactory(dataSource);
     }
 }

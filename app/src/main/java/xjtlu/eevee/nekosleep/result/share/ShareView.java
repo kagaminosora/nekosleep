@@ -1,10 +1,9 @@
-package xjtlu.eevee.nekosleep.share;
+package xjtlu.eevee.nekosleep.result.share;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -43,9 +42,7 @@ public class ShareView extends FrameLayout {
         shareImg.setImageDrawable(drawable);
     }
 
-    public void setQRCode(Bitmap qrCode){
-        shareQR.setImageBitmap(qrCode);
-    }
+    public void setQRCode(Bitmap qrCode){ shareQR.setImageBitmap(qrCode); }
 
     public Bitmap createImage(){
         int widthMeasureSpec = MeasureSpec.makeMeasureSpec(IMAGE_WIDTH, MeasureSpec.EXACTLY);

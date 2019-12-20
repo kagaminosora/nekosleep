@@ -2,10 +2,13 @@ package xjtlu.eevee.nekosleep.collections.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
@@ -14,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -25,48 +29,72 @@ import java.util.List;
 import io.reactivex.schedulers.Schedulers;
 import xjtlu.eevee.nekosleep.R;
 import xjtlu.eevee.nekosleep.collections.AssetReader;
+import xjtlu.eevee.nekosleep.collections.Injection;
 import xjtlu.eevee.nekosleep.collections.persistence.Pet;
-import xjtlu.eevee.nekosleep.collections.persistence.PetBookDatabase;
-import xjtlu.eevee.nekosleep.collections.persistence.PetDao;
 
+/**
+ * Slide Pages for pets
+ */
 public class PetScreenSlideActivity extends AppCompatActivity {
     Context appContext;
-    static PetBookDatabase dbPet;
-    static PetDao petDao;
 
+    private TextView titleTV;
 
     private static final String TAG = PetScreenSlideActivity.class.getSimpleName();
     private final CompositeDisposable disposable = new CompositeDisposable();
-    //private ViewModelFactory mViewModelFactory;
-    //private PetViewModel mViewModel;
+    private ViewModelFactory petViewModelFactory;
+    private PetViewModel petViewModel;
 
     private static int NUM_PAGE = 4;
-    ViewPager page_one;
-    ArrayList<View> pageList;
-    LinearLayout pageIndicator;
-    ViewPagerAdapter pageAdapter;
-
-    List<Pet> petList;
+    private ViewPager viewPager;
+    private ArrayList<View> pageList;
+    private LinearLayout pageIndicator;
+    private ViewPagerAdapter pageAdapter;
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.view_pager_pets_activity);
         init();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
-        setContentView(R.layout.view_pager_pets_activity);
         init();
     }
 
     public void init() {
         appContext = getApplicationContext();
+        setContentView(R.layout.view_pager_pets_activity);
+        initTitle();
         initPetData();
+        initViewPager();
+    }
 
+    public void initTitle(){
+        titleTV = findViewById(R.id.pet_title);
+        Drawable backIcon = titleTV.getCompoundDrawables()[0];
+        titleTV.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getX() < backIcon.getBounds().width()+ view.getPaddingLeft()
+                        && motionEvent.getX() > view.getPaddingLeft()
+                        && motionEvent.getY() < backIcon.getBounds().height() + view.getPaddingBottom()
+                        && motionEvent.getY() > view.getPaddingBottom()){
+                    finish();
+                }
+                return false;
+            }
+        });
+    }
+
+    public void initPetData(){
+        petViewModelFactory = Injection.provideViewModelFactory(this);
+        petViewModel = new ViewModelProvider(this, petViewModelFactory).get(PetViewModel.class);
+    }
+
+    public void initViewPager(){
         //viewpager
-        page_one = (ViewPager) findViewById(R.id.view_pager_pets);
+        viewPager = (ViewPager) findViewById(R.id.view_pager_pets);
         pageList = new ArrayList<View>();
 
         //Set the first dot to inactive
@@ -75,15 +103,20 @@ public class PetScreenSlideActivity extends AppCompatActivity {
         pageIndicator.getChildAt(0).setActivated(true);
 
         //loop to add viewpager
-        for (int i = 0; i < NUM_PAGE; i++) {
-            pageList.add(getPetsPage(i));
-        }
-
-        pageAdapter = new ViewPagerAdapter(pageList);
-        page_one.setAdapter(pageAdapter);
+        disposable.add(petViewModel.getAllPets()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(pets -> {
+                            for (int i = 0; i < NUM_PAGE; i++) {
+                                pageList.add(getPetsPage(i, pets));
+                            }
+                            pageAdapter = new ViewPagerAdapter(pageList);
+                            viewPager.setAdapter(pageAdapter);
+                        },
+                        throwable -> Log.e(TAG, "Unable to load image", throwable)));
 
         // Scroll Listener
-        page_one.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             private int lastPage;
             //during scroll
             @Override
@@ -109,15 +142,6 @@ public class PetScreenSlideActivity extends AppCompatActivity {
         });
     }
 
-    public void initPetData(){
-        if(dbPet == null) {
-            dbPet = PetBookDatabase.getInstance(appContext);
-            petDao = dbPet.petDAO();
-        }
-        //mViewModelFactory = Injection.provideViewModelFactory(this);
-        //mViewModel = new ViewModelProvider(this, mViewModelFactory).get(PetViewModel.class);
-    }
-
     private void clearIndicatorFocusedState() {
         int childCount = pageIndicator.getChildCount();
         for (int i = 0; i < childCount; i++) {
@@ -125,48 +149,36 @@ public class PetScreenSlideActivity extends AppCompatActivity {
         }
     }
 
-    public View getPetsPage(int pageNum){
+    public View getPetsPage(int pageNum, List<Pet> pets){
         View page = View.inflate(this, R.layout.fragment_pets, null);
         GridLayout gl_pets = page.findViewById(R.id.gl_pets);
-        int petNum = gl_pets.getChildCount();
-
-        for(int i=0; i<petNum; i++){
-            String petId = "00000000";
-            int index = pageNum*4+i;
-            if(index<10){
-                petId = "0000000"+index;
-            }else if(index<100){
-                petId = "000000"+index;
-            }else{
-                petId = "00000"+index;
-            }
-            CardView cv = (CardView)gl_pets.getChildAt(i);
-            String finalPetId = petId;
+        int last = (pageNum+1)*4<pets.size()? (pageNum+1)*4 : pets.size();
+        for (int i=pageNum*4; i < last; i++) {
+            CardView cv = (CardView) gl_pets.getChildAt(i%4);
             TextView tv_pet = (TextView) cv.getChildAt(0);
-            disposable.add(petDao.getPetById(petId)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(pet -> {
-                                Drawable pet_img = getResources().getDrawable(R.drawable.default_cat);
-                                if(pet.isActive()) {
-                                    pet_img = AssetReader.getDrawableFromAssets(
-                                            appContext, "petbook_img/" + pet.getImageName() + ".png");
-                                    cv.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            Intent intent = new Intent(PetScreenSlideActivity.this, ChooseItemActivity.class);
-                                            Bundle bundle = new Bundle();
-                                            bundle.putString("petId", finalPetId);
-                                            intent.putExtras(bundle);
-                                            startActivity(intent);
-                                        }
-                                    });
-                                }
-                                pet_img.setBounds(0,0,pet_img.getMinimumWidth(),pet_img.getMinimumHeight());
-                                tv_pet.setCompoundDrawablesWithIntrinsicBounds(null, pet_img, null, null);
-                                tv_pet.setText(pet.getPetName());
-                            },
-                            throwable -> Log.e(TAG, "Unable to load image", throwable)));
+            Pet pet = pets.get(i);
+            Bitmap pet_img;
+            if (pet.isActive()) {
+                pet_img = AssetReader.loadImageFromAssets(
+                        appContext, "petbook_img/" + pet.getImgName() + ".png");
+
+                cv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(PetScreenSlideActivity.this, ChooseItemActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("petId", pet.getId());
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+            }else {
+                pet_img = AssetReader.loadImageFromAssets(appContext, "petbook_img/cat_footprint.png");
+            }
+            Drawable pet_dr = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(pet_img, 200, 200, true));
+            tv_pet.setCompoundDrawablesWithIntrinsicBounds(null, pet_dr, null, null);
+            tv_pet.setText(pet.getName());
         }
         return page;
     }

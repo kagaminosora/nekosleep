@@ -17,7 +17,7 @@ public interface PetDao {
     Flowable<Pet> getPetById(String petId);
 
     @Query("SELECT * FROM book_pet")
-    List<Pet> getAll();
+    Flowable<List<Pet>> getAll();
 
     @Query("SELECT * FROM book_pet WHERE name LIKE :name")
     Pet findByName(String name);

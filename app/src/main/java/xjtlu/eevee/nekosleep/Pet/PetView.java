@@ -54,12 +54,7 @@ public class PetView extends AppCompatImageView {
         animations = new ArrayList<>();
         pikaqiuAnim ();
         this.setBackgroundColor(Color.TRANSPARENT);
-
-        this.setPetNum(petNum);
-        switch(petNum) {
-            case 0:
-                this.setImageResource(R.drawable.pikaqiu_walking);
-        }
+        this.setImageResource(R.drawable.pikaqiu_walking);
     }
 
     @Override

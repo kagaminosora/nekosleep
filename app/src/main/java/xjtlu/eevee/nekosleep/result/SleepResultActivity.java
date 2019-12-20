@@ -2,7 +2,8 @@ package xjtlu.eevee.nekosleep.result;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Rect;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -13,25 +14,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Index;
+import androidx.lifecycle.ViewModelProvider;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import xjtlu.eevee.nekosleep.R;
 import xjtlu.eevee.nekosleep.collections.AssetReader;
-import xjtlu.eevee.nekosleep.collections.persistence.ItemDao;
-import xjtlu.eevee.nekosleep.collections.persistence.PetBookDatabase;
-import xjtlu.eevee.nekosleep.collections.persistence.PetDao;
+import xjtlu.eevee.nekosleep.collections.Injection;
 import xjtlu.eevee.nekosleep.collections.ui.PetScreenSlideActivity;
-import xjtlu.eevee.nekosleep.share.ShareUtil;
+import xjtlu.eevee.nekosleep.collections.ui.PetViewModel;
+import xjtlu.eevee.nekosleep.collections.ui.ViewModelFactory;
+import xjtlu.eevee.nekosleep.result.share.ShareUtil;
 
+/**
+ *
+ */
 public class SleepResultActivity extends AppCompatActivity {
     private final CompositeDisposable disposable = new CompositeDisposable();
-    static PetBookDatabase dbPet;
-    static PetDao petDao;
-    static ItemDao itemDao;
     private static final String TAG = PetScreenSlideActivity.class.getSimpleName();
+    private ViewModelFactory petViewModelFactory;
+    private PetViewModel petViewModel;
 
     private TextView titleTV;
     private Drawable shareIcon;
@@ -48,6 +51,16 @@ public class SleepResultActivity extends AppCompatActivity {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        init();
+    }
+
+    public void onCreate(Bundle savedInstanceState, PersistableBundle persistableState){
+        super.onCreate(savedInstanceState, persistableState);
+        init();
+    }
+
+    public void init(){
+        setContentView(R.layout.sleep_result);
         Bundle bundle = this.getIntent().getExtras();
         type = bundle.getString("type");
         if(type.equals("pet")){
@@ -56,16 +69,6 @@ public class SleepResultActivity extends AppCompatActivity {
             itemId = bundle.getString("itemId");
         }
         setContentView(R.layout.sleep_result);
-        init();
-    }
-
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistableState){
-        super.onCreate(savedInstanceState, persistableState);
-        setContentView(R.layout.sleep_result);
-        init();
-    }
-
-    public void init(){
         initView();
         initIcon();
     }
@@ -78,18 +81,17 @@ public class SleepResultActivity extends AppCompatActivity {
         resultImg = findViewById(R.id.img_result);
         resultTV = findViewById(R.id.tv_result);
 
-        if(dbPet == null) {
-            dbPet = PetBookDatabase.getInstance(getApplicationContext());
-            if(petDao==null){
-                petDao = dbPet.petDAO();
-            }
-            if(itemDao==null){
-                itemDao = dbPet.itemDAO();
-            }
+        petViewModelFactory = Injection.provideViewModelFactory(this);
+        petViewModel = new ViewModelProvider(this, petViewModelFactory).get(PetViewModel.class);
+        if(type.equals("finish")) {
+            resultTV.setText(R.string.result_get_all);
+            itemImg = getDrawable(R.drawable.medal);
+        }else {
+            editDatabase();
+            setImg();
+            setText();
+            savePreferences();
         }
-        editDatabase();
-        setImg();
-        setText();
     }
 
     public void editDatabase(){
@@ -97,9 +99,9 @@ public class SleepResultActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if(type.equals("pet")) {
-                    petDao.setActive(true, petId);
+                    petViewModel.updatePetActiveness(petId);
                 }else if(type.equals("item")){
-                    itemDao.setActive(true, itemId);
+                    petViewModel.updateItemActiveness(itemId);
                 }
             }
         });
@@ -123,7 +125,6 @@ public class SleepResultActivity extends AppCompatActivity {
                         && motionEvent.getX() > view.getPaddingLeft()
                         && motionEvent.getY() < backIcon.getBounds().height() + view.getPaddingBottom()
                         && motionEvent.getY() > view.getPaddingBottom()){
-                    savePreferences();
                     finish();
                 }
                 return false;
@@ -144,31 +145,31 @@ public class SleepResultActivity extends AppCompatActivity {
     }
 
     public void setImg(){
-        if(type.equals(("pet"))) {
-            disposable.add(petDao.getPetById(petId)
+        if(type.equals("pet")) {
+            disposable.add(petViewModel.getPet(petId)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(pet -> {
-                                Drawable pet_img = AssetReader.getDrawableFromAssets(
-                                        getApplicationContext(), "petbook_img/" + pet.getImageName() + ".png");
-                                pet_img.setBounds(0, 0, pet_img.getMinimumWidth(), pet_img.getMinimumHeight());
-                                itemImg = pet_img;
-                                resultImg.setImageDrawable(itemImg);
+                                setImg(type, pet.getImgName());
                             },
                             throwable -> Log.e(TAG, "Unable to load image", throwable)));
         }else if(type.equals("item")){
-            disposable.add(itemDao.findById(itemId)
+            disposable.add(petViewModel.getItem(itemId)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(item -> {
-                                Drawable item_img = AssetReader.getDrawableFromAssets(
-                                        getApplicationContext(), "itembook_img/" + item.getImageName() + ".png");
-                                item_img.setBounds(0,0,item_img.getIntrinsicWidth(),item_img.getIntrinsicHeight());
-                                itemImg = item_img;
-                                resultImg.setImageDrawable(itemImg);
+                                setImg(type, item.getImgName());
                             },
                             throwable -> Log.e(TAG, "Unable to load image", throwable)));
         }
+    }
+
+    public void setImg(String type, String name){
+        Bitmap img = AssetReader.loadImageFromAssets(
+                getApplicationContext(), type + "book_img/" + name + ".png");
+        Drawable dr = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(img, 100, 100, true));
+        itemImg = dr;
+        resultImg.setImageDrawable(itemImg);
     }
 
     public void savePreferences(){
@@ -179,12 +180,12 @@ public class SleepResultActivity extends AppCompatActivity {
             String nextId = String.valueOf(id);
             if(id<10){
                 nextId = "0000000"+nextId;
-            }else {
+            }else if (id<100) {
                 nextId = "000000"+nextId;
             }
             editor.putString("nextType", "pet");
             editor.putString("nextItemId", nextId);
-            if(petId.equals("00000015")) {
+            if(petId.equals("00000002")) {
                 editor.putString("nextType", "item");
                 editor.putString("nextItemId", "00000000");
             }
@@ -195,10 +196,12 @@ public class SleepResultActivity extends AppCompatActivity {
                 nextId = "0000000"+nextId;
             }else if(id<100){
                 nextId = "000000"+nextId;
-            }else {
-                nextId = "00000"+nextId;
             }
-            editor.putString("nextType", "item");
+            if(id<8) {
+                editor.putString("nextType", "item");
+            }else {
+                editor.putString("nextType", "finish");
+            }
             editor.putString("nextItemId", nextId);
         }
         editor.commit();

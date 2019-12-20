@@ -16,15 +16,20 @@
 
 package xjtlu.eevee.nekosleep.collections.ui;
 
+import android.util.Log;
+
 import androidx.lifecycle.ViewModel;
+
+import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import xjtlu.eevee.nekosleep.collections.PetDataSource;
+import xjtlu.eevee.nekosleep.collections.persistence.Item;
 import xjtlu.eevee.nekosleep.collections.persistence.Pet;
 
 /**
- * View Model for the {@link PetScreenSlideActivity}
+ * View Model for pages related to pets and items
  */
 public class PetViewModel extends ViewModel {
 
@@ -32,34 +37,78 @@ public class PetViewModel extends ViewModel {
 
     private Pet mPet;
 
+    private Item mItem;
+
+    private List<Item> petItems;
+
+    private List<Pet> mPets;
+
+    private List<Item> mItems;
+
     public PetViewModel(PetDataSource dataSource) {
         mDataSource = dataSource;
     }
 
-    /**
-     * Get the user name of the user.
-     *
-     * @return a {@link Flowable} that will emit every time the user name has been updated.
-     */
-    public Flowable<String> getPetName(String id) {
+    public Flowable<Pet> getPet(String id) {
         return mDataSource.getPet(id)
-                // for every emission of the user, get the user name
                 .map(pet -> {
                     mPet = pet;
-                    return pet.getPetName();
+                    return pet;
                 });
     }
 
-    /**
-     * Update the user name.
-     *
-     * @param petId the new user name
-     * @return a {@link Completable} that completes when the user name is updated
-     */
-    public void updateUserName(String petId) {
-        // if there's no user, create a new user.
-        // if we already have a user, then, since the user object is immutable,
-        // create a new user, with the id of the previous user and the updated user name.
+    public Flowable<Item> getItem(String itemId){
+        return mDataSource.getItem(itemId)
+                .map(item -> {
+                     mItem = item;
+                     return item;
+                }
+        );
+    }
+
+    public Flowable<List<Item>> getPetItems(String petId) {
+        return mDataSource.getPetItems(petId).map(
+                items -> {
+                    petItems = items;
+                    return items;
+                }
+        );
+    }
+
+    public Flowable<List<Pet>> getAllPets(){
+        return mDataSource.getAllPets().map(
+                pets -> {
+                    mPets = pets;
+                    return pets;
+                }
+        );
+    }
+
+    public Flowable<List<Item>> getAllItems(){
+        Log.d("database", "get all");
+        return mDataSource.getAllItems().map(
+                items -> {
+                    mItems = items;
+                    return items;
+                }
+        );
+    }
+
+    public void updatePetActiveness(String petId) {
+        if(mPets!=null) {
+            for (Pet pet : mPets) {
+                if (pet.getId() == petId) pet.setActive();
+            }
+        }
         mDataSource.updatePetActive(petId);
+    }
+
+    public void updateItemActiveness(String itemId) {
+        if(mItems!=null) {
+            for (Item item : mItems) {
+                if (item.getId() == itemId) item.setActive();
+            }
+        }
+        mDataSource.updateItemActive(itemId);
     }
 }
