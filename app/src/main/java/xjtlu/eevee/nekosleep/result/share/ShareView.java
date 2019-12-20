@@ -1,10 +1,9 @@
-package xjtlu.eevee.nekosleep.share;
+package xjtlu.eevee.nekosleep.result.share;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;

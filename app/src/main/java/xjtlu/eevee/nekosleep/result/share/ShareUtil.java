@@ -1,4 +1,4 @@
-package xjtlu.eevee.nekosleep.share;
+package xjtlu.eevee.nekosleep.result.share;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -77,6 +77,7 @@ public class ShareUtil{
         return FileProvider.getUriForFile(context, "xjtlu.eevee.nekosleep.fileprovider", file);
     }
 
+    //From https://github.com/yangxch/GenerateQRCode
     public Bitmap generateQRCode(){
         int BLACK = 0xff000000;
         Hashtable<EncodeHintType, String> hints = new Hashtable<EncodeHintType, String>();

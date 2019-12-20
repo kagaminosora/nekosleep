@@ -3,7 +3,6 @@ package xjtlu.eevee.nekosleep.result;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -16,23 +15,21 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.room.Index;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import xjtlu.eevee.nekosleep.R;
 import xjtlu.eevee.nekosleep.collections.AssetReader;
 import xjtlu.eevee.nekosleep.collections.Injection;
-import xjtlu.eevee.nekosleep.collections.persistence.ItemDao;
-import xjtlu.eevee.nekosleep.collections.persistence.PetBookDatabase;
-import xjtlu.eevee.nekosleep.collections.persistence.PetDao;
 import xjtlu.eevee.nekosleep.collections.ui.PetScreenSlideActivity;
 import xjtlu.eevee.nekosleep.collections.ui.PetViewModel;
 import xjtlu.eevee.nekosleep.collections.ui.ViewModelFactory;
-import xjtlu.eevee.nekosleep.share.ShareUtil;
+import xjtlu.eevee.nekosleep.result.share.ShareUtil;
 
+/**
+ *
+ */
 public class SleepResultActivity extends AppCompatActivity {
     private final CompositeDisposable disposable = new CompositeDisposable();
     private static final String TAG = PetScreenSlideActivity.class.getSimpleName();
@@ -59,11 +56,11 @@ public class SleepResultActivity extends AppCompatActivity {
 
     public void onCreate(Bundle savedInstanceState, PersistableBundle persistableState){
         super.onCreate(savedInstanceState, persistableState);
-        setContentView(R.layout.sleep_result);
         init();
     }
 
     public void init(){
+        setContentView(R.layout.sleep_result);
         Bundle bundle = this.getIntent().getExtras();
         type = bundle.getString("type");
         if(type.equals("pet")){

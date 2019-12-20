@@ -8,6 +8,9 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.List;
 
+/**
+ * Customized PagerAdapter, only set the pages in PagerAdapter
+ */
 public class ViewPagerAdapter extends PagerAdapter {
     private List<View> pages;
 

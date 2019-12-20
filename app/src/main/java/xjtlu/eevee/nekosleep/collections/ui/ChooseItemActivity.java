@@ -28,8 +28,10 @@ import xjtlu.eevee.nekosleep.collections.AssetReader;
 import xjtlu.eevee.nekosleep.collections.Injection;
 import xjtlu.eevee.nekosleep.collections.persistence.Item;
 import xjtlu.eevee.nekosleep.collections.persistence.Pet;
-import xjtlu.eevee.nekosleep.share.ShareUtil;
 
+/**
+ * Choose a pet and an item (can be null) to show in the home page
+ */
 public class ChooseItemActivity extends AppCompatActivity {
     private final CompositeDisposable disposable = new CompositeDisposable();
     private Context appContext;
@@ -57,17 +59,14 @@ public class ChooseItemActivity extends AppCompatActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
-        Bundle bundle = this.getIntent().getExtras();
-        petId = bundle.getString("petId");
-        setContentView(R.layout.choose_item);
         init();
     }
 
     public void init(){
+        appContext = getApplicationContext();
         Bundle bundle = this.getIntent().getExtras();
         petId = bundle.getString("petId");
         setContentView(R.layout.choose_item);
-        appContext = getApplicationContext();
         initViews();
         initDatabase();
         initObjects();

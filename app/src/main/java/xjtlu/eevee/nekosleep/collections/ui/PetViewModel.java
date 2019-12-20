@@ -16,7 +16,6 @@
 
 package xjtlu.eevee.nekosleep.collections.ui;
 
-import android.os.Debug;
 import android.util.Log;
 
 import androidx.lifecycle.ViewModel;
@@ -30,7 +29,7 @@ import xjtlu.eevee.nekosleep.collections.persistence.Item;
 import xjtlu.eevee.nekosleep.collections.persistence.Pet;
 
 /**
- * View Model for the {@link PetScreenSlideActivity}
+ * View Model for pages related to pets and items
  */
 public class PetViewModel extends ViewModel {
 
