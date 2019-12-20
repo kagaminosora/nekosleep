@@ -2,22 +2,18 @@ package xjtlu.eevee.nekosleep.menu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.ui.AppBarConfiguration;
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.Manifest;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
@@ -26,7 +22,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 
-import android.os.HandlerThread;
 import android.provider.Settings;
 
 import android.util.Log;
@@ -38,33 +33,29 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextClock;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import xjtlu.eevee.nekosleep.Pet.FloatWindowManagerService;
 import xjtlu.eevee.nekosleep.R;
 import xjtlu.eevee.nekosleep.collections.AssetReader;
-import xjtlu.eevee.nekosleep.collections.ui.ChooseItemActivity;
 import xjtlu.eevee.nekosleep.collections.ui.ItemScreenSlideActivity;
 import xjtlu.eevee.nekosleep.collections.ui.PetScreenSlideActivity;
 import xjtlu.eevee.nekosleep.home.DetectService;
 import xjtlu.eevee.nekosleep.home.DigitalClock;
 import xjtlu.eevee.nekosleep.home.ForegroundCallbacks;
 import xjtlu.eevee.nekosleep.home.ServiceNotification;
-import xjtlu.eevee.nekosleep.home.TestActivity;
 import xjtlu.eevee.nekosleep.result.SleepResultActivity;
 import xjtlu.eevee.nekosleep.settings.UserSettingsActivity;
+
+import static xjtlu.eevee.nekosleep.settings.UserSettingsActivity.getTime;
 
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
@@ -93,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     boolean petStarted = false;
     boolean sleep_result = false;
     boolean wake_result = false;
+    boolean monitor_result = true;
     static Intent petIntent;
 
     private DetectService mDetectService;
@@ -106,22 +98,31 @@ public class MainActivity extends AppCompatActivity {
         initPetView();
         initProgressBar();
         initNavigationView();
+        initScreenListener();
         mDetectService = new DetectService();
-//        ForegroundCallbacks.init(this.getApplication()).addListener(new ForegroundCallbacks.Listener() {
-//            @Override
-//            public void onBecameForeground() {
-//
-//            }
-//
-//            @Override
-//            public void onBecameBackground() {
-//                if ((!screen_off) && (issleeped)) {
-//                    Intent it = new Intent(MainActivity.this, MainActivity.class);
-//                    finish();
-//                    startActivity(it);
-//                }
-//            }
-//        });
+
+        ForegroundCallbacks.init(this.getApplication()).addListener(new ForegroundCallbacks.Listener() {
+            @Override
+            public void onBecameForeground() {
+
+            }
+
+            @Override
+            public void onBecameBackground() {
+                System.out.println("screen: "+mSharedPreferences.getBoolean("SCREEN_STATE",false));
+                System.out.println("sleep: "+issleeped);
+                if ((mSharedPreferences.getBoolean("SCREEN_STATE",false)) && (issleeped)) {
+                    monitor_result = false;
+                    issleeped = false;
+                    Toast toast = Toast.makeText(MainActivity.this,"Leave the APP and slepp fail!",Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.show();
+                    Intent it = new Intent(MainActivity.this, MainActivity.class);
+                    finish();
+                    startActivity(it);
+                }
+            }
+        });
     }
 
     public void initNavigationView(){
@@ -201,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view){
                 Date date = new Date(System.currentTimeMillis());
                 long time_current = date.getTime()/1000;
-                //System.out.println(time_current);
+                System.out.println(time_current);
                 if(!issleeped) {
                     int length = getSleepLength();
                     if(length<14400 || length>360000){
@@ -209,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = new Intent(MainActivity.this, UserSettingsActivity.class);
                         startActivity(intent);
                     }else {
+                        monitor_result = true;
                         issleeped = true;
                         pb.setVisibility(View.VISIBLE);
                         setImg(petView, petImgName + "_sleep", "home");
@@ -222,6 +224,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 else{
+                    Calendar calendar = Calendar. getInstance();
+                    calendar.add( Calendar. DATE, +1);
+                    int cHour = calendar.get(Calendar.HOUR);
+                    int cMin = calendar.get(Calendar.MINUTE);
+                    int wHour = Integer.valueOf(wake_time.split(":")[0]);
+                    int wMin = Integer.valueOf(wake_time.split(":")[1]);
+                    wake_result = false;
                     issleeped = false;
                     pb.setVisibility(View.INVISIBLE);
                     SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
@@ -229,12 +238,16 @@ public class MainActivity extends AppCompatActivity {
                     editor.putBoolean("sleepy", true);
                     editor.commit();
                     initPetView();
-                    sleeporwake.setText(R.string.home_sleep);
+                    if(monitor_result) sleeporwake.setText(R.string.home_sleep);
+                    if(within1h(cHour,cMin,wHour,wMin)) wake_result=true;
                     EndTimer();
-                    if (wake_result&&sleep_result){
+                    if (wake_result&&sleep_result&&monitor_result){
                         System.out.println("success");gotoResult();
                     }else{
                         System.out.println("fail");
+                        Toast toast = Toast.makeText(MainActivity.this,"Not follow the set time and sleep fail!",Toast.LENGTH_SHORT);
+                        toast.setGravity(Gravity.CENTER,0,0);
+                        toast.show();
                     }
                     progress=0;
                     pb.setProgress(0);
@@ -275,6 +288,30 @@ public class MainActivity extends AppCompatActivity {
         return length;
     }
 
+    public boolean within1h(int hourCurrent, int minCurrent, int hourSet, int minSet){
+        if (hourSet==23){
+            if (hourCurrent==0){
+                if(minSet>=minCurrent){return true;}
+                else return false;
+            }else{
+                if(getTimeLength(hourCurrent,minCurrent,hourSet,minSet)<=60){return true;}
+                else return false;
+            }
+        }
+        else if (hourSet==0){
+            if (hourCurrent==23){
+                if(minCurrent>=minSet){
+                    return true;
+                }else return false;
+            }else{
+                if(getTimeLength(hourSet,minSet,hourCurrent,minCurrent)<=60){return true;}
+                else return false;
+            }
+        }
+        else if(getTimeLength(hourCurrent,minCurrent,hourSet,minSet)<=60||getTimeLength(hourSet,minSet,hourCurrent,minCurrent)<=60){
+            return true;
+        }else return false;
+    }
 
 
     public void initBackground(){
@@ -334,8 +371,12 @@ public class MainActivity extends AppCompatActivity {
         }
 //        System.out.println(screen_off);
 //        System.out.println(initScreenListener());
-        if (issleeped && (!initScreenListener())) {
-            //EndTimer();
+//        System.out.println(mSharedPreferences.getBoolean("SCREEN_STATE",false));
+        if (issleeped && (!mSharedPreferences.getBoolean("SCREEN_STATE",false))) {
+            EndTimer();
+            monitor_result = false;
+            issleeped = false;
+            System.out.println("fail");
         }
     }
 
@@ -343,16 +384,14 @@ public class MainActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         SharedPreferences sp = this.getPreferences(MODE_PRIVATE);
-        long sleep_time = sp.getLong("SLEEP_TIME_LONG",0)/1000;
-        long wake_time = sp.getLong("WAKE_TIME_LONG",0)/1000;
-        long sleep_last = wake_time - sleep_time;
-        long period = sleep_last*60;
+//        long sleep_time = sp.getLong("SLEEP_TIME_LONG",0)/1000;
+//        long wake_time = sp.getLong("WAKE_TIME_LONG",0)/1000;
+//        long sleep_last = wake_time - sleep_time;
+//        long period = sleep_last*60;
+//        System.out.println(mSharedPreferences.getBoolean("SCREEN_STATE",false));
         if (serviceForegroundIntent != null) {
             stopService(serviceForegroundIntent);
             serviceForegroundIntent = null;
-        }
-        if (issleeped) {
-
         }
     }
 
@@ -375,7 +414,10 @@ public class MainActivity extends AppCompatActivity {
     public void StartTimer(int period) {
         pb.setMax(getSleepLength());
         Date time_current = new Date(System.currentTimeMillis());
+        String time_c = getTime(time_current);
         Calendar calendar = Calendar. getInstance();
+        calendar.add( Calendar. DATE, +1);
+        Date date= calendar.getTime();
         int cHour = calendar.get(Calendar.HOUR_OF_DAY);
         int cMin = calendar.get(Calendar.MINUTE);
         int sHour = Integer.valueOf(sleep_time.split(":")[0]);
@@ -383,9 +425,9 @@ public class MainActivity extends AppCompatActivity {
         int wHour = Integer.valueOf(wake_time.split(":")[0]);
         int wMin = Integer.valueOf(wake_time.split(":")[1]);
 
-        if(getTimeLength(sHour, sMin, cHour, cMin)<7200){
-            //can sleep
-        }
+        if(within1h(cHour,cMin,sHour,sMin)){
+            sleep_result = true;//can sleep
+        }else sleep_result = false;
 
         //如果timer和timerTask已经被置null了
         if (timer == null&&timerTask==null) {
@@ -394,6 +436,8 @@ public class MainActivity extends AppCompatActivity {
             timerTask = new TimerTask() {
                 @Override
                 public void run() {
+                    Date time_current = new Date(System.currentTimeMillis());
+                    String time_c = getTime(time_current);
                     Calendar calendar = Calendar. getInstance();
                     int cHour = calendar.get(Calendar.HOUR_OF_DAY);
                     int cMin = calendar.get(Calendar.MINUTE);
@@ -404,7 +448,6 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("timer",String.valueOf(len2));
                     if(len2<120) {
                         timer.cancel();
-                        gotoResult();
                     }
                 }
             };
@@ -511,16 +554,16 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
     }
 
-    public boolean initScreenListener() {
+    public void initScreenListener() {
         IntentFilter filter = new IntentFilter("xjtlu.eevee.nekosleep");
         registerReceiver(mDetectService, filter);
-        screen_off = false;
-        lockScreenBroadcastReceiver = new LockScreenBroadcastReceiver(
-                new LockScreenListener() {
-
+        lockScreenBroadcastReceiver = new LockScreenBroadcastReceiver(new LockScreenListener() {
                     @Override
                     public void onUserPresent() {
-                        screen_off = false;
+                        screen_off = true;
+                        SharedPreferences.Editor edit = mSharedPreferences.edit();
+                        edit.putBoolean("SCREEN_STATE", screen_off);
+                        edit.commit();
                         Log.i(Tag,"onUserPresent");
                     }
 
@@ -531,7 +574,10 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onScreenOff() {
-                        screen_off = true;
+                        screen_off = false;
+                        SharedPreferences.Editor edit = mSharedPreferences.edit();
+                        edit.putBoolean("SCREEN_STATE", screen_off);
+                        edit.commit();
                         Log.i(Tag,"onScreenOff");
                     }
                 });
@@ -540,6 +586,5 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_USER_PRESENT);
         registerReceiver(lockScreenBroadcastReceiver, intentFilter);
-        return screen_off;
     }
 }

@@ -66,6 +66,7 @@
     <string name="menu_send">Send</string>
 
     <string name="home_sleep">Sleep</string>
+    <string name="home_fail">Fail</string>
     <string name="home_wake">Wake</string>
     <string name="home_cancel">Cancel</string>
 </resources>
