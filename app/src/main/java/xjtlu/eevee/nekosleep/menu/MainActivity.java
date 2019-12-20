@@ -201,17 +201,22 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view){
                 Date date = new Date(System.currentTimeMillis());
                 long time_current = date.getTime()/1000;
-                System.out.println(time_current);
+                //System.out.println(time_current);
                 if(!issleeped) {
                     int length = getSleepLength();
-                    if(length==0){
-                        Toast.makeText(getApplicationContext(),"Please set sleep and wake up time", Toast.LENGTH_SHORT).show();
+                    if(length<14400 || length>360000){
+                        Toast.makeText(getApplicationContext(),"Please reset sleep and wake up time to sleep 4-10 hours", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(MainActivity.this, UserSettingsActivity.class);
                         startActivity(intent);
                     }else {
                         issleeped = true;
                         pb.setVisibility(View.VISIBLE);
                         setImg(petView, petImgName + "_sleep", "home");
+                        if(petStarted){
+                            stopService(petIntent);
+                            petStarted = false;
+                        }
+                        petView.setClickable(false);
                         sleeporwake.setText(R.string.home_cancel);
                         StartTimer(length);
                     }
@@ -219,6 +224,10 @@ public class MainActivity extends AppCompatActivity {
                 else{
                     issleeped = false;
                     pb.setVisibility(View.INVISIBLE);
+                    SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putBoolean("sleepy", true);
+                    editor.commit();
                     initPetView();
                     sleeporwake.setText(R.string.home_sleep);
                     EndTimer();
@@ -262,9 +271,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             length = (hourEnd - hourStart) * 3600 + (minEnd - minStart) * 60;
         }
-        if(length>36000){
-            length=0;
-        }
+        if(length<0) length=+24*3600;
         return length;
     }
 
@@ -288,13 +295,20 @@ public class MainActivity extends AppCompatActivity {
         String itemId = sp.getString("itemId", "empty");
         petImgName = sp.getString("petImgName", "pikachu");
         itemImgName = sp.getString("itemImgName", "empty");
-        setImg(petView, petImgName+"_"+itemImgName, "home");
+        boolean sleepy = sp.getBoolean("sleepy", true);
         petView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 checkAndRequirePermission();
             }
         });
+        if(sleepy){
+            setImg(petView, petImgName + "_sleep", "home");
+            petView.setClickable(false);
+        }else {
+            setImg(petView, petImgName + "_" + itemImgName, "home");
+            petView.setClickable(true);
+        }
     }
 
     public void setImg(ImageView view, String name, String type){
@@ -319,9 +333,9 @@ public class MainActivity extends AppCompatActivity {
             startService(serviceForegroundIntent);
         }
 //        System.out.println(screen_off);
-        System.out.println(initScreenListener());
+//        System.out.println(initScreenListener());
         if (issleeped && (!initScreenListener())) {
-            EndTimer();
+            //EndTimer();
         }
     }
 
@@ -362,9 +376,7 @@ public class MainActivity extends AppCompatActivity {
         pb.setMax(getSleepLength());
         Date time_current = new Date(System.currentTimeMillis());
         Calendar calendar = Calendar. getInstance();
-        //calendar.add( Calendar. DATE, +1);
-        //Date date= calendar.getTime();
-        int cHour = calendar.get(Calendar.HOUR);
+        int cHour = calendar.get(Calendar.HOUR_OF_DAY);
         int cMin = calendar.get(Calendar.MINUTE);
         int sHour = Integer.valueOf(sleep_time.split(":")[0]);
         int sMin = Integer.valueOf(sleep_time.split(":")[1]);
@@ -383,11 +395,14 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     Calendar calendar = Calendar. getInstance();
-                    int cHour = calendar.get(Calendar.HOUR);
+                    int cHour = calendar.get(Calendar.HOUR_OF_DAY);
                     int cMin = calendar.get(Calendar.MINUTE);
-                    Log.d("timer", String.valueOf(getTimeLength(sHour,sMin,cHour,cMin)));
-                    pb.setProgress(getTimeLength(sHour,sMin,cHour,cMin));
-                    if(getTimeLength(wHour,wMin,cHour,cMin)>0) {
+                    int len1 = getTimeLength(sHour,sMin,cHour,cMin);
+                    int len2 = getTimeLength(wHour,wMin,cHour,cMin);
+                    if(len1>36000) len1=0;
+                    pb.setProgress(len1);
+                    Log.d("timer",String.valueOf(len2));
+                    if(len2<120) {
                         timer.cancel();
                         gotoResult();
                     }
@@ -481,6 +496,9 @@ public class MainActivity extends AppCompatActivity {
             Bundle bundle = new Bundle();
             SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
             String type = sp.getString("nextType", "empty");
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean("sleepy", false);
+            editor.commit();
             if(type.equals("empty")){
                 type = "pet";
                 bundle.putString("petId", "00000001");

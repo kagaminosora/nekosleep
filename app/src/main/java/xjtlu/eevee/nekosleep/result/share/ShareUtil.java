@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Hashtable;
 
 import xjtlu.eevee.nekosleep.R;
@@ -59,7 +61,7 @@ public class ShareUtil{
 
     public Uri saveImage(Bitmap bitmap){
         File path = context.getCacheDir();
-        String fileName = "shareImage.png";
+        String fileName = System.currentTimeMillis()+".png";
         File file = new File(path, fileName);
         if(file.exists()){
             file.delete();
