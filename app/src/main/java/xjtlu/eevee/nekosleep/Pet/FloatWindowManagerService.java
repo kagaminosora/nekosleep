@@ -41,7 +41,7 @@ public class FloatWindowManagerService extends Service {
         int result = super.onStartCommand(intent, flags, startId);
         SharedPreferences sharedPreferences = this.getSharedPreferences("type", MODE_PRIVATE);
         int petNum = sharedPreferences.getInt("type", 0);
-        mLayoutParams =  new WindowManager.LayoutParams(PetView.height, PetView.width, 0, 0, WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, PixelFormat.OPAQUE);
+        mLayoutParams =  new WindowManager.LayoutParams(PetView.height, PetView.width, 0, 0, WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, PixelFormat.OPAQUE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //Android 8.0
             mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
@@ -49,6 +49,7 @@ public class FloatWindowManagerService extends Service {
             //其他版本
             mLayoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
         }
+        mLayoutParams.format = PixelFormat.RGBA_8888;
         mContext = this.getApplicationContext();
         mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -83,6 +84,7 @@ public class FloatWindowManagerService extends Service {
                             //其他版本
                             updatedParams.type = WindowManager.LayoutParams.TYPE_PHONE;
                         }
+                        updatedParams.format = PixelFormat.RGBA_8888;
                         updatedParams.x = (int)(x + motionEvent.getRawX() - touchedX);
                         updatedParams.y = (int)(y + motionEvent.getRawY() - touchedY);
                         mWindowManager.updateViewLayout(linearLayout, updatedParams);

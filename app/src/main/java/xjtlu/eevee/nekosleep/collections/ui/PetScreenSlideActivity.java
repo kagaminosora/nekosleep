@@ -17,7 +17,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.solver.widgets.Rectangle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
@@ -32,7 +31,6 @@ import xjtlu.eevee.nekosleep.R;
 import xjtlu.eevee.nekosleep.collections.AssetReader;
 import xjtlu.eevee.nekosleep.collections.Injection;
 import xjtlu.eevee.nekosleep.collections.persistence.Pet;
-import xjtlu.eevee.nekosleep.share.ShareUtil;
 
 public class PetScreenSlideActivity extends AppCompatActivity {
     Context appContext;

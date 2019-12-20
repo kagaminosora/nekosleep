@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
                     sleeporwake.setText(R.string.home_sleep);
                     EndTimer();
                     if (wake_result&&sleep_result){
-                        System.out.println("success");sleepResult();
+                        System.out.println("success");gotoResult();
                     }else{
                         System.out.println("fail");
                     }
@@ -253,24 +253,7 @@ public class MainActivity extends AppCompatActivity {
         return length;
     }
 
-    public void sleepResult(){
-        Intent intent = new Intent(MainActivity.this, SleepResultActivity.class);
-        Bundle bundle = new Bundle();
-        SharedPreferences sp = getApplicationContext().getSharedPreferences("pet", MODE_PRIVATE);
-        String type = sp.getString("nextType", "empty");
-        if(type.equals("empty")){
-            bundle.putString("type", "pet");
-            bundle.putString("petId", "00000000");
-        }else if(type.equals("pet")){
-            bundle.putString("type", "pet");
-            bundle.putString("petId", sp.getString("nextItemId", "empty"));
-        }else if(type.equals("item")){
-            bundle.putString("type", "item");
-            bundle.putString("itemId", sp.getString("nextItemId", "empty"));
-        }
-        intent.putExtras(bundle);
-        startActivity(intent);
-    }
+
 
     public void initBackground(){
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -321,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
             startService(serviceForegroundIntent);
         }
         if (issleeped) {
-            EndTimer();
+            //EndTimer();
         }
     }
 

@@ -1,4 +1,4 @@
-package xjtlu.eevee.nekosleep.share;
+package xjtlu.eevee.nekosleep.result.share;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;

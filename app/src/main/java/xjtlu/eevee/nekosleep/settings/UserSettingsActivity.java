@@ -79,6 +79,7 @@ public class UserSettingsActivity extends AppCompatActivity {
                         Intent intent = new Intent(UserSettingsActivity.this,
                                 AlarmClockActivity.class);
                         startActivity(intent);
+                        finish();
                     }
                 } else {
                     if (alarmFlag) {
