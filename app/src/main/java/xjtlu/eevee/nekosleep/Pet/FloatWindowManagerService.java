@@ -66,7 +66,7 @@ public class FloatWindowManagerService extends Service {
             int y;
             float touchedX;
             float touchedY;
-            WindowManager.LayoutParams updatedParams =  new WindowManager.LayoutParams(PetView.height, PetView.width, mLayoutParams.x, mLayoutParams.y , WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, PixelFormat.OPAQUE);
+            WindowManager.LayoutParams updatedParams =  new WindowManager.LayoutParams(PetView.height, PetView.width, mLayoutParams.x, mLayoutParams.y , WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, PixelFormat.OPAQUE);
 
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
