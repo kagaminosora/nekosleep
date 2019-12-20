@@ -26,6 +26,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.os.HandlerThread;
 import android.provider.Settings;
 
 import android.util.Log;
@@ -59,6 +60,7 @@ import xjtlu.eevee.nekosleep.collections.ui.ItemScreenSlideActivity;
 import xjtlu.eevee.nekosleep.collections.ui.PetScreenSlideActivity;
 import xjtlu.eevee.nekosleep.home.DetectService;
 import xjtlu.eevee.nekosleep.home.DigitalClock;
+import xjtlu.eevee.nekosleep.home.ForegroundCallbacks;
 import xjtlu.eevee.nekosleep.home.ServiceNotification;
 import xjtlu.eevee.nekosleep.home.TestActivity;
 import xjtlu.eevee.nekosleep.result.SleepResultActivity;
@@ -92,24 +94,37 @@ public class MainActivity extends AppCompatActivity {
     boolean sleep_result = false;
     boolean wake_result = false;
     static Intent petIntent;
-    private long diff = 944697600;
 
     private DetectService mDetectService;
+    LockScreenBroadcastReceiver lockScreenBroadcastReceiver;
+    boolean screen_off = false;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initBackground();
         initPetView();
         initProgressBar();
-        initNevigationView();
+        initNavigationView();
         mDetectService = new DetectService();
-        IntentFilter filter = new IntentFilter("xjtlu.eevee.nekosleep");
-        registerReceiver(mDetectService, filter);
+//        ForegroundCallbacks.init(this.getApplication()).addListener(new ForegroundCallbacks.Listener() {
+//            @Override
+//            public void onBecameForeground() {
+//
+//            }
+//
+//            @Override
+//            public void onBecameBackground() {
+//                if ((!screen_off) && (issleeped)) {
+//                    Intent it = new Intent(MainActivity.this, MainActivity.class);
+//                    finish();
+//                    startActivity(it);
+//                }
+//            }
+//        });
     }
 
-    public void initNevigationView(){
+    public void initNavigationView(){
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
@@ -303,8 +318,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             startService(serviceForegroundIntent);
         }
-        if (issleeped) {
-            //EndTimer();
+//        System.out.println(screen_off);
+        System.out.println(initScreenListener());
+        if (issleeped && (!initScreenListener())) {
+            EndTimer();
         }
     }
 
@@ -475,5 +492,37 @@ public class MainActivity extends AppCompatActivity {
             bundle.putString("type", type);
             intent.putExtras(bundle);
             startActivity(intent);
+    }
+
+    public boolean initScreenListener() {
+        IntentFilter filter = new IntentFilter("xjtlu.eevee.nekosleep");
+        registerReceiver(mDetectService, filter);
+        screen_off = false;
+        lockScreenBroadcastReceiver = new LockScreenBroadcastReceiver(
+                new LockScreenListener() {
+
+                    @Override
+                    public void onUserPresent() {
+                        screen_off = false;
+                        Log.i(Tag,"onUserPresent");
+                    }
+
+                    @Override
+                    public void onScreenOn() {
+                        Log.i(Tag,"onScreenOn");
+                    }
+
+                    @Override
+                    public void onScreenOff() {
+                        screen_off = true;
+                        Log.i(Tag,"onScreenOff");
+                    }
+                });
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
+        intentFilter.addAction(Intent.ACTION_USER_PRESENT);
+        registerReceiver(lockScreenBroadcastReceiver, intentFilter);
+        return screen_off;
     }
 }
