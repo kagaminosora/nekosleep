@@ -412,7 +412,6 @@ public class MainActivity extends AppCompatActivity {
         timer.schedule(timerTask, time_current, 60000);
     }
 
-
     public void EndTimer() {
         timer.cancel();
         timerTask.cancel();
