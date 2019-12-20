@@ -1,74 +1,110 @@
 package xjtlu.eevee.nekosleep.Pet;
 
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.widget.AppCompatImageView;
+
+import java.util.ArrayList;
+
+import xjtlu.eevee.nekosleep.R;
 
 public class PetView extends AppCompatImageView {
 
     private float x;
     private float y;
+    private ArrayList <String> animations;
     LinearLayout container;
     static int height = 170;
     static int width = 170;
+    private int petNum;
+    private Context mContext;
 
 
     public PetView (Context context) {
         super(context);
         init();
+        this.mContext = context;
     }
 
     public PetView (Context context, AttributeSet attrs){
         super(context, attrs);
         init();
+        this.mContext = context;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-//        Paint p = new Paint();
-//        p.setColor(Color.RED);
-//        p.setStrokeWidth(10);
-//        canvas.drawCircle(x,y, canvas.getWidth() / 10, new Paint());
     }
 
     private void init() {
         x = 10;
         y = 10;
+        animations = new ArrayList<>();
+        pikaqiuAnim ();
         this.setBackgroundColor(Color.TRANSPARENT);
+
+        this.setPetNum(petNum);
+        switch(petNum) {
+            case 0:
+                this.setImageResource(R.drawable.pikaqiu_walking);
+        }
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        super.onTouchEvent(event);
-        AnimationDrawable pikaqiuWalking = (AnimationDrawable)this.getDrawable();
-        pikaqiuWalking.start();
-//        switch (event.getActionMasked()) {
-//            case MotionEvent.ACTION_DOWN:
-//            case MotionEvent.ACTION_UP:
-//            case MotionEvent.ACTION_CANCEL: {
-//                doRandomAction();
-//            }
-//            case MotionEvent.ACTION_MOVE:
-//                container.setX(event.getX());
-//                container.setY(event.getY());
-//                container.postInvalidate();
-//        }
-        return true;
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        switch (motionEvent.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                System.out.println("ACTION DOWN");
+            case MotionEvent.ACTION_MOVE:
+                System.out.println("ACTION MOVE");
+        }
+        return super.onTouchEvent(motionEvent);
     }
 
-    private void doRandomAction () {
-
+    public void doRandomAction () {
+        int actionNumber = (int) (Math.random() * animations.size());
+        switch (actionNumber) {
+            case 0:
+                this.setImageResource(getResources().getIdentifier(animations.get(0), "drawable", "xjtlu.eevee.nekosleep"));
+                break;
+            case 1:
+                this.setImageResource(getResources().getIdentifier(animations.get(1), "drawable", "xjtlu.eevee.nekosleep"));
+                break;
+            case 2:
+                this.setImageResource(getResources().getIdentifier(animations.get(2), "drawable", "xjtlu.eevee.nekosleep"));
+                break;
+            case 3:
+                this.setImageResource(getResources().getIdentifier(animations.get(3), "drawable", "xjtlu.eevee.nekosleep"));
+                break;
+            case 4:
+                this.setImageResource(getResources().getIdentifier(animations.get(4), "drawable", "xjtlu.eevee.nekosleep"));
+                break;
+        }
+        AnimationDrawable animationDrawable = (AnimationDrawable)this.getDrawable();
+        animationDrawable.start();
     }
 
+    private void pikaqiuAnim () {
+        animations.add("pikaqiu_walking");
+        animations.add("pikaqiu_wave");
+        animations.add("pikaqiu_sit");
+        animations.add("pikaqiu_sit2");
+        animations.add("pikaqiu_crawl");
+    }
 
+    public void setPetNum (int petNum) {
+        this.petNum = petNum;
+    }
 }

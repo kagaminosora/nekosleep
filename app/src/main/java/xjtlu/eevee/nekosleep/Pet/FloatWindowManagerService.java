@@ -1,8 +1,10 @@
 package xjtlu.eevee.nekosleep.Pet;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
@@ -41,7 +43,7 @@ public class FloatWindowManagerService extends Service {
         int result = super.onStartCommand(intent, flags, startId);
         SharedPreferences sharedPreferences = this.getSharedPreferences("type", MODE_PRIVATE);
         int petNum = sharedPreferences.getInt("type", 0);
-        mLayoutParams =  new WindowManager.LayoutParams(PetView.height, PetView.width, 0, 0, WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, PixelFormat.OPAQUE);
+        mLayoutParams =  new WindowManager.LayoutParams(PetView.height, PetView.width, 0, 0, WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, PixelFormat.RGBA_8888);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //Android 8.0
             mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
@@ -55,42 +57,47 @@ public class FloatWindowManagerService extends Service {
         linearLayout = (LinearLayout)inflater.inflate(R.layout.pet_frame, null, false);
         linearLayout.setBackgroundColor(Color.TRANSPARENT);
         PetView pet = (PetView)inflater.inflate(R.layout.pet_view, null,false);
-        pet.setBackgroundColor(Color.TRANSPARENT);
-        linearLayout.addView(pet);
-        pet.setImageResource(R.drawable.pikaqiu_walking);
         pet.container = linearLayout;
-        mWindowManager.addView(linearLayout, mLayoutParams);
-        pet.setOnTouchListener(new View.OnTouchListener() {
+        linearLayout.addView(pet);
+        addFloatingWindow();
+        linearLayout.setOnTouchListener(new View.OnTouchListener() {
             int x;
             int y;
             float touchedX;
             float touchedY;
-            WindowManager.LayoutParams updatedParams =  new WindowManager.LayoutParams(PetView.height, PetView.width, mLayoutParams.x, mLayoutParams.y , WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, PixelFormat.OPAQUE);
 
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 switch (motionEvent.getActionMasked()) {
                     case MotionEvent.ACTION_DOWN:
-                        x = updatedParams.x;
-                        y = updatedParams.y;
+                        x = mLayoutParams.x;
+                        y = mLayoutParams.y;
                         touchedX = motionEvent.getRawX();
                         touchedY = motionEvent.getRawY();
+                        pet.doRandomAction();
                     case MotionEvent.ACTION_MOVE:
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            //Android 8.0
-                            updatedParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
-                        } else {
-                            //其他版本
-                            updatedParams.type = WindowManager.LayoutParams.TYPE_PHONE;
-                        }
-                        updatedParams.x = (int)(x + motionEvent.getRawX() - touchedX);
-                        updatedParams.y = (int)(y + motionEvent.getRawY() - touchedY);
-                        mWindowManager.updateViewLayout(linearLayout, updatedParams);
+                        mLayoutParams.x = (int)(x + motionEvent.getRawX() - touchedX);
+                        mLayoutParams.y = (int)(y + motionEvent.getRawY() - touchedY);
+                        mWindowManager.updateViewLayout(linearLayout, mLayoutParams);
                 }
                 return false;
             }
         });
+        BroadcastReceiver tickReceiver = new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
+                    pet.doRandomAction();
+                    pet.doRandomAction();
+                }
+            }
+        };
+        registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         return result;
+    }
+
+    public void addFloatingWindow () {
+        mWindowManager.addView(linearLayout, mLayoutParams);
     }
 
     @Override

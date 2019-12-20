@@ -4,6 +4,7 @@
     android:id="@+id/petFrame"
     android:background="@android:color/transparent"
     android:layout_width="100dp"
-    android:layout_height="100dp">
+    android:layout_height="100dp"
+    >
 
 </LinearLayout>
